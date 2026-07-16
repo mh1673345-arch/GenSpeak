@@ -102,11 +102,10 @@ export function Translator() {
               setMessages(data[0].messages);
             }, 0);
           } else {
-            // Create a default session in the database
             const defaultSession: SavedSession = {
               id: "session-" + ++messageIdCounter,
               title: "Initial Chat Session",
-              messages: [...messages],
+              messages: [],
               updatedAt: new Date().toISOString()
             };
             setTimeout(() => {
@@ -135,7 +134,7 @@ export function Translator() {
         }
       }
     }
-  }, [user, messages]);
+  }, [user]);
 
   // Sync current conversation messages with sessions array
   useEffect(() => {
