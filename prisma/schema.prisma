@@ -1,0 +1,377 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  USER
+  MODERATOR
+  ADMIN
+}
+
+enum WordStatus {
+  DRAFT
+  PENDING_REVIEW
+  APPROVED
+  REJECTED
+}
+
+enum VoteType {
+  UPVOTE
+  DOWNVOTE
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+  GIF
+}
+
+model User {
+  id            String          @id @default(uuid())
+  name          String?
+  email         String          @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  role          Role            @default(USER)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  
+  authorProfile Author?
+  bookmarks     Bookmark[]
+  votes         Vote[]
+  comments      Comment[]
+  reports       Report[]        @relation("Reporter")
+  auditLogs     AuditLog[]
+  searchHistory SearchHistory[]
+  aiConversations AiConversation[]
+}
+
+model Author {
+  id        String   @id @default(uuid())
+  userId    String?  @unique
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  name      String
+  bio       String?  
+  avatarUrl String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  words     Word[]
+  guides    Guide[]
+}
+
+model Word {
+  id              String          @id @default(uuid())
+  slug            String          @unique
+  title           String          // Mapped as the main term title (e.g., "rizz")
+  shortMeaning    String          
+  fullMeaning     String          
+  pronunciation   String?         // IPA phonetic symbol
+  origin          String?         
+  firstAppearance String?         // First appearance marker date/era
+  emoji           String?         // Representing slang graphic character
+  aiExplanation   String?         
+  aiTranslation   String?         
+  seoTitle        String?
+  seoDescription  String?
+  ipa             String?
+  historyText     String?
+  relatedHashtags String?
+  difficulty      String?
+  popularityScore Int             @default(0)
+  trendScore      Int             @default(0)
+  commonMistakes  String?
+  eli10           String?
+  parentExplanation String?
+  teacherExplanation String?
+  safetyNotes     String?
+  references      String?
+  ogTitle         String?
+  ogDescription   String?
+  featuredImage   String?
+  gallery         String?
+  status          WordStatus      @default(PENDING_REVIEW)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  // Author relationship
+  authorId        String
+  author          Author          @relation(fields: [authorId], references: [id])
+  
+  // Many-to-many relationships
+  categories      Category[]
+  tags            Tag[]
+  platforms       Platform[]
+  guides          Guide[]
+  collections     Collection[]
+  timelineEvents  TimelineEvent[]
+  
+  // Detail relationships
+  examples        Example[]
+  conversations   Conversation[]
+  synonyms        Synonym[]
+  antonyms        Antonym[]
+  
+  // Self-relations for related words
+  relatedFrom     RelatedWord[]   @relation("RelatedWordSource")
+  relatedTo       RelatedWord[]   @relation("RelatedWordTarget")
+  
+  // Analytics and interactive engagements
+  trending        Trending[]
+  bookmarks       Bookmark[]
+  votes           Vote[]
+  comments        Comment[]
+  media           Media[]
+  analytics       Analytics[]
+  reports         Report[]
+
+  @@index([status])
+  @@index([title])
+}
+
+model Category {
+  id          String   @id @default(uuid())
+  slug        String   @unique
+  name        String   @unique
+  description String?  
+  icon        String?  // Emoji or Lucide key
+  
+  words       Word[]
+  guides      Guide[]
+}
+
+model Tag {
+  id    String @id @default(uuid())
+  slug  String @unique
+  name  String @unique
+  
+  words Word[]
+}
+
+model Platform {
+  id    String @id @default(uuid())
+  slug  String @unique
+  name  String @unique
+  icon  String?
+  
+  words Word[]
+}
+
+model Guide {
+  id            String       @id @default(uuid())
+  slug          String       @unique
+  title         String
+  description   String       
+  content       String       
+  readTime      String
+  published     Boolean      @default(false)
+  publishedAt   DateTime?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  
+  // Author
+  authorId      String
+  author        Author       @relation(fields: [authorId], references: [id])
+  
+  // Many-to-many relationships
+  words         Word[]
+  categories    Category[]
+  collections   Collection[]
+}
+
+model InternetCultureTopic {
+  id            String   @id @default(uuid())
+  slug          String   @unique
+  title         String
+  description   String   
+  introduction  String   
+  historyText   String   
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Collection {
+  id             String   @id @default(uuid())
+  slug           String   @unique
+  title          String
+  description    String   
+  bannerGradient String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  
+  words          Word[]
+  guides         Guide[]
+}
+
+model TimelineEvent {
+  id          String   @id @default(uuid())
+  year        String
+  title       String
+  description String   
+  eventDate   DateTime
+  createdAt   DateTime @default(now())
+  
+  words       Word[]
+}
+
+model Example {
+  id        String   @id @default(uuid())
+  wordId    String
+  word      Word     @relation(fields: [wordId], references: [id], onDelete: Cascade)
+  text      String   
+  context   String?  // e.g., "Discord Chat"
+  createdAt DateTime @default(now())
+}
+
+model Conversation {
+  id        String   @id @default(uuid())
+  wordId    String
+  word      Word     @relation(fields: [wordId], references: [id], onDelete: Cascade)
+  text      String   
+  context   String?  // e.g., "Parent-teen exchange example"
+  createdAt DateTime @default(now())
+}
+
+model RelatedWord {
+  id           String @id @default(uuid())
+  sourceWordId String
+  targetWordId String
+  
+  sourceWord   Word   @relation("RelatedWordSource", fields: [sourceWordId], references: [id], onDelete: Cascade)
+  targetWord   Word   @relation("RelatedWordTarget", fields: [targetWordId], references: [id], onDelete: Cascade)
+
+  @@unique([sourceWordId, targetWordId])
+}
+
+model Synonym {
+  id        String @id @default(uuid())
+  wordId    String
+  word      Word   @relation(fields: [wordId], references: [id], onDelete: Cascade)
+  term      String
+}
+
+model Antonym {
+  id        String @id @default(uuid())
+  wordId    String
+  word      Word   @relation(fields: [wordId], references: [id], onDelete: Cascade)
+  term      String
+}
+
+model SearchHistory {
+  id        String   @id @default(uuid())
+  query     String
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  createdAt DateTime @default(now())
+
+  @@index([query])
+}
+
+model Trending {
+  id        String   @id @default(uuid())
+  wordId    String
+  word      Word     @relation(fields: [wordId], references: [id], onDelete: Cascade)
+  rank      Int
+  score     Float
+  updatedAt DateTime @updatedAt
+}
+
+model Bookmark {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  wordId    String
+  word      Word     @relation(fields: [wordId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, wordId])
+}
+
+model Vote {
+  id        String   @id @default(uuid())
+  wordId    String
+  word      Word     @relation(fields: [wordId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      VoteType
+  createdAt DateTime @default(now())
+
+  @@unique([userId, wordId])
+}
+
+model Comment {
+  id        String    @id @default(uuid())
+  wordId    String
+  word      Word      @relation(fields: [wordId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  content   String    
+  parentId  String?
+  parent    Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies   Comment[] @relation("CommentReplies")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Media {
+  id        String    @id @default(uuid())
+  wordId    String
+  word      Word      @relation(fields: [wordId], references: [id], onDelete: Cascade)
+  url       String
+  type      MediaType
+  caption   String?
+  createdAt DateTime  @default(now())
+}
+
+model Newsletter {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+model Analytics {
+  id        String   @id @default(uuid())
+  wordId    String
+  word      Word     @relation(fields: [wordId], references: [id], onDelete: Cascade)
+  views     Int      @default(0)
+  shares    Int      @default(0)
+  copies    Int      @default(0)
+  date      DateTime @default(now())
+}
+
+model Report {
+  id         String   @id @default(uuid())
+  reporterId String
+  reporter   User     @relation("Reporter", fields: [reporterId], references: [id])
+  wordId     String?
+  word       Word?    @relation(fields: [wordId], references: [id], onDelete: Cascade)
+  reason     String   
+  resolved   Boolean  @default(false)
+  createdAt  DateTime @default(now())
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  action    String   // e.g., "WORD_DELETE", "USER_ROLE_UPDATE"
+  details   String?  
+  createdAt DateTime @default(now())
+}
+
+model AiConversation {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  messages  String   // JSON string storing ChatMessage array
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
