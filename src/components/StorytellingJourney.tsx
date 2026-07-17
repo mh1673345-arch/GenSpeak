@@ -331,7 +331,7 @@ export function StorytellingJourney({ onSelectWord }: StorytellingJourneyProps) 
         </motion.div>
 
         {/* The Internet Planet 3D Canvas element wrapper */}
-        <div className="absolute w-full h-[680px] top-[250px] md:top-[285px] lg:top-[320px] pointer-events-none select-none z-10">
+        <div className="absolute w-full h-[680px] top-[250px] md:top-[285px] lg:top-[320px] pointer-events-none select-none z-30">
           <InternetPlanet onTrackNodes={setTrackedNodes} />
 
           {/* Connected SVG lines drawing overlay */}
@@ -388,7 +388,7 @@ export function StorytellingJourney({ onSelectWord }: StorytellingJourneyProps) 
         </div>
 
         {/* Interaction controls block overlaid on center of planet */}
-        <div className="relative w-full max-w-xl mx-auto flex flex-col items-center gap-6 z-20 mt-[140px] md:mt-[170px] lg:mt-[200px]">
+        <div className="relative w-full max-w-xl mx-auto flex flex-col items-center gap-6 z-30 mt-[140px] md:mt-[170px] lg:mt-[200px]">
           <div className="w-full">
             <SearchBox onSelectWord={onSelectWord} />
           </div>
