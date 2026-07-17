@@ -396,13 +396,13 @@ export function StorytellingJourney({ onSelectWord }: StorytellingJourneyProps) 
           <div className="flex gap-4 items-center justify-center">
             <Link 
               href="/dictionary" 
-              className="px-6 py-3 rounded-full bg-primary-pink text-white font-display font-semibold text-xs tracking-wider uppercase transition-all duration-300 hover:bg-primary-pink/90 hover:shadow-[0_0_20px_rgba(255,106,26,0.35)] hover:scale-[1.02] active:scale-95 cursor-pointer"
+              className="px-6 py-3 rounded-full bg-gradient-to-r from-[#FF6A1A] to-[#FF8A3D] text-white font-display font-semibold text-xs tracking-wider uppercase transition-all duration-300 hover:brightness-110 hover:shadow-[0_0_30px_rgba(255,106,26,0.5)] hover:scale-[1.02] active:scale-95 cursor-pointer shadow-[0_0_20px_rgba(255,106,26,0.25)]"
             >
               Explore Dictionary
             </Link>
             <Link 
               href="/ai-decoder" 
-              className="px-6 py-3 rounded-full bg-[#111217] border border-white/8 text-[#9EA3B0] hover:text-white font-display font-semibold text-xs tracking-wider uppercase transition-all duration-300 hover:bg-[#111217]/80 hover:scale-[1.02] active:scale-95 cursor-pointer"
+              className="px-6 py-3 rounded-full bg-[#121319] border border-white/20 text-slate-200 hover:text-white font-display font-semibold text-xs tracking-wider uppercase transition-all duration-300 hover:bg-[#15161f] hover:border-white/30 hover:shadow-[0_0_25px_rgba(255,255,255,0.06)] hover:scale-[1.02] active:scale-95 cursor-pointer"
             >
               Try AI Decoder
             </Link>
