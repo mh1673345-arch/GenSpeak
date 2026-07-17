@@ -20,6 +20,15 @@ export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [notificationsDropdownOpen, setNotificationsDropdownOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   // Mouse coords tracker for dynamic glass reflections
   const navRef = useRef<HTMLDivElement>(null);
@@ -74,7 +83,7 @@ export function Navbar() {
       <header 
         ref={navRef}
         onMouseMove={handleMouseMove}
-        className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-6xl group transition-all duration-300"
+        className={`fixed left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-6xl group transition-all duration-500 ease-out ${isScrolled ? "top-2" : "top-4"}`}
       >
         {/* Floating gradient border container */}
         <div className="rounded-2xl p-[1px] bg-gradient-to-b from-white/[0.08] to-transparent shadow-2xl relative overflow-hidden">
@@ -90,7 +99,7 @@ export function Navbar() {
           />
 
           {/* Inner dark glass panel */}
-          <div className="rounded-[15px] bg-[#09090b]/80 backdrop-blur-md px-4 sm:px-6 py-2.5 flex items-center justify-between relative z-10">
+          <div className={`rounded-[15px] transition-all duration-500 ease-out px-4 sm:px-6 flex items-center justify-between relative z-10 ${isScrolled ? "py-1.5 bg-black/92 backdrop-blur-2xl shadow-inner border border-white/[0.03]" : "py-2.5 bg-[#09090b]/80 backdrop-blur-md"}`}>
             
             {/* LEFT: Logo and taglines */}
             <div className="flex flex-col select-none relative group/logo shrink-0">

@@ -275,13 +275,16 @@ export function StorytellingJourney({ onSelectWord }: StorytellingJourneyProps) 
     <div ref={containerRef} className="w-full flex flex-col items-center bg-[#050505] overflow-hidden">
       
       {/* LANDING PORTAL HERO */}
-      <section className="relative w-full h-[660px] flex flex-col items-center justify-center overflow-hidden">
+      <section className="relative w-full h-[860px] sm:h-[880px] lg:h-[920px] flex flex-col items-center justify-start pt-[90px] md:pt-[110px] lg:pt-[160px] pb-10 overflow-hidden">
         
+        {/* Core central light flare behind the planet */}
+        <div className="absolute top-[340px] md:top-[370px] lg:top-[400px] left-1/2 -translate-x-1/2 w-[550px] h-[550px] rounded-full bg-gradient-radial from-[#FF6A1A]/10 via-[#8A6CFF]/0.03 to-transparent blur-[120px] pointer-events-none z-0" />
+
         {/* Shifting Floating Slangs background overlay */}
         {mounted && (
           <div className="absolute inset-0 w-full h-full pointer-events-none z-0">
             <motion.div 
-              style={{ y: yRizz, opacity: opacityRizz, left: "15%", bottom: "25%" }}
+              style={{ y: yRizz, opacity: opacityRizz, left: "15%", bottom: "35%" }}
               className="absolute font-mono font-bold text-[10px] uppercase text-[#9EA3B0] bg-[#111217]/50 border border-white/[0.06] px-3.5 py-1.5 rounded-full backdrop-blur-md will-change-[transform,opacity]"
             >
               Rizz
@@ -299,7 +302,7 @@ export function StorytellingJourney({ onSelectWord }: StorytellingJourneyProps) 
               Mewing
             </motion.div>
             <motion.div 
-              style={{ y: yNPC, opacity: opacityNPC, left: "75%", bottom: "35%" }}
+              style={{ y: yNPC, opacity: opacityNPC, left: "75%", bottom: "45%" }}
               className="absolute font-mono font-bold text-[10px] uppercase text-[#9EA3B0] bg-[#111217]/50 border border-white/[0.06] px-3.5 py-1.5 rounded-full backdrop-blur-md will-change-[transform,opacity]"
             >
               NPC
@@ -311,24 +314,24 @@ export function StorytellingJourney({ onSelectWord }: StorytellingJourneyProps) 
           initial="hidden"
           animate="visible"
           variants={heroReveal}
-          className="relative w-full max-w-4xl px-4 flex flex-col items-center text-center gap-5 z-20 mt-4 animate-fade-in"
+          className="relative w-full max-w-4xl px-4 flex flex-col items-center text-center gap-6 z-20 mt-2 animate-fade-in"
         >
-          <span className="text-[10px] font-mono uppercase font-bold tracking-widest text-[#FF8A3D]">
+          <span className="text-[10px] font-mono uppercase font-bold tracking-widest text-[#FF8A3D] bg-[#FF8A3D]/5 border border-[#FF8A3D]/10 px-2.5 py-0.5 rounded-full">
             THE INTERNET PLANET
           </span>
 
-          <h1 className="text-5xl sm:text-7xl md:text-[80px] font-black font-display tracking-tight text-white leading-[0.92] max-w-4xl">
+          <h1 className="text-5xl sm:text-7xl md:text-[80px] font-black font-display tracking-tight text-white leading-[1.05] pb-2 max-w-4xl">
             Understand Internet Culture. <br />
             <span className="text-gradient">Speak the Language.</span>
           </h1>
 
-          <p className="text-xs sm:text-sm text-[#9EA3B0] font-sans max-w-xl leading-relaxed">
+          <p className="text-xs sm:text-sm text-[#9EA3B0] font-sans max-w-xl leading-relaxed tracking-wide">
             Your gateway to internet slang, memes, acronyms, and the ever-evolving digital world.
           </p>
         </motion.div>
 
         {/* The Internet Planet 3D Canvas element wrapper */}
-        <div className="absolute inset-0 w-full h-[620px] top-[180px] pointer-events-none select-none z-10">
+        <div className="absolute w-full h-[680px] top-[250px] md:top-[285px] lg:top-[320px] pointer-events-none select-none z-10">
           <InternetPlanet onTrackNodes={setTrackedNodes} />
 
           {/* Connected SVG lines drawing overlay */}
@@ -347,8 +350,8 @@ export function StorytellingJourney({ onSelectWord }: StorytellingJourneyProps) 
                     y1={badgeY}
                     x2={node.x}
                     y2={node.y}
-                    stroke="rgba(255, 106, 26, 0.3)"
-                    strokeWidth="1.2"
+                    stroke="rgba(255, 106, 26, 0.22)"
+                    strokeWidth="1.0"
                     strokeDasharray="2 3"
                   />
                 );
@@ -374,7 +377,7 @@ export function StorytellingJourney({ onSelectWord }: StorytellingJourneyProps) 
               >
                 <button
                   onClick={() => router.push(`/category/${node.id}`)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#0B0B0F]/90 border border-white/5 text-[10px] font-mono uppercase tracking-widest text-[#9EA3B0] hover:text-white hover:border-[#FF6A1A]/30 transition-all duration-300 shadow-xl cursor-pointer"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#090A0F]/90 border border-white/[0.08] backdrop-blur-md text-[10px] font-mono uppercase tracking-widest text-[#9EA3B0] hover:text-white hover:border-[#FF6A1A]/35 transition-all duration-300 shadow-[0_4px_24px_rgba(0,0,0,0.6)] cursor-pointer hover:shadow-[#FF6A1A]/5 hover:scale-[1.02]"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-[#FF6A1A] animate-pulse" />
                   {node.label}
@@ -385,7 +388,7 @@ export function StorytellingJourney({ onSelectWord }: StorytellingJourneyProps) 
         </div>
 
         {/* Interaction controls block overlaid on center of planet */}
-        <div className="relative w-full max-w-xl mx-auto flex flex-col items-center gap-6 z-20 mt-36">
+        <div className="relative w-full max-w-xl mx-auto flex flex-col items-center gap-6 z-20 mt-[140px] md:mt-[170px] lg:mt-[200px]">
           <div className="w-full">
             <SearchBox onSelectWord={onSelectWord} />
           </div>
@@ -407,7 +410,7 @@ export function StorytellingJourney({ onSelectWord }: StorytellingJourneyProps) 
         </div>
 
         {/* Horizon Portal */}
-        <div className="absolute bottom-[200px] left-1/2 -translate-x-1/2 flex flex-col items-center z-10 pointer-events-none">
+        <div className="absolute bottom-[280px] left-1/2 -translate-x-1/2 flex flex-col items-center z-10 pointer-events-none">
           <div className="w-[45px] h-[72px] rounded-t-[4px] bg-gradient-to-t from-[#FF6A1A] to-[#FFB347] shadow-[0_0_35px_rgba(255,106,26,0.65)] relative overflow-hidden flex items-end justify-center">
             <svg viewBox="0 0 100 100" className="w-5 h-10 text-[#050505] fill-current opacity-90 mb-0.5">
               <circle cx="50" cy="25" r="12" />
@@ -416,6 +419,9 @@ export function StorytellingJourney({ onSelectWord }: StorytellingJourneyProps) 
           </div>
           <div className="w-[45px] h-[45px] rounded-b-[4px] bg-gradient-to-b from-[#FF6A1A]/25 to-transparent scale-y-[-1] opacity-60 blur-[1px] mt-[1px]" />
         </div>
+
+        {/* Volumetric Dark Fading Mask at fold bottom */}
+        <div className="absolute bottom-0 left-0 right-0 h-44 bg-gradient-to-t from-[#050505] via-[#050505]/85 to-transparent z-20 pointer-events-none" />
 
         <div className="h-24 w-full" />
       </section>

@@ -38,8 +38,19 @@ export function SearchBox({ onSelectWord }: SearchBoxProps) {
 
   const [results, setResults] = useState<SearchItem[]>([]);
   const [trendingWords, setTrendingWords] = useState<WordData[]>([]);
+  const [hoverMousePos, setHoverMousePos] = useState({ x: 0, y: 0 });
+  const triggerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const recognitionRef = useRef<{ start: () => void; stop: () => void } | null>(null);
+  
+  const handleTriggerMouseMove = (e: React.MouseEvent) => {
+    if (!triggerRef.current) return;
+    const rect = triggerRef.current.getBoundingClientRect();
+    setHoverMousePos({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top
+    });
+  };
 
   // Load search history and trending words on mount
   useEffect(() => {
@@ -53,7 +64,11 @@ export function SearchBox({ onSelectWord }: SearchBoxProps) {
     }
     fetch("/api/word?trending=true")
       .then(res => res.json())
-      .then(data => setTrendingWords(data))
+      .then(data => {
+        setTimeout(() => {
+          setTrendingWords(data);
+        }, 0);
+      })
       .catch(err => console.error("Failed to load trending words:", err));
   }, []);
 
@@ -317,16 +332,25 @@ export function SearchBox({ onSelectWord }: SearchBoxProps) {
 
   return (
     <div className="relative w-full max-w-2xl mx-auto">
-      {/* Standard trigger bar */}
       <div 
+        ref={triggerRef}
+        onMouseMove={handleTriggerMouseMove}
         onClick={() => setIsOpen(true)}
-        className="flex items-center gap-3 px-4 py-4 rounded-2xl border border-white/5 bg-[#111217]/10 backdrop-blur-md cursor-text transition-all duration-300 hover:border-white/10 hover:bg-[#111217]/25"
+        className="flex items-center gap-3 px-5 py-4.5 rounded-2xl border border-white/[0.06] bg-[#0E0F14]/65 backdrop-blur-lg cursor-text transition-all duration-300 hover:border-white/[0.14] hover:bg-[#121319]/80 hover:shadow-[0_8px_32px_rgba(255,106,26,0.06)] relative overflow-hidden group shadow-[0_12px_40px_rgba(0,0,0,0.5)]"
       >
-        <Search className="w-5 h-5 text-slate-400" />
-        <span className="flex-1 text-slate-500 text-left text-sm md:text-base select-none font-sans">
+        {/* Cursor tracking halo reflection overlay */}
+        <div 
+          className="absolute inset-0 pointer-events-none transition-opacity duration-300 opacity-0 group-hover:opacity-100 bg-[radial-gradient(100px_circle_at_var(--x)_var(--y),rgba(255,106,26,0.04),transparent)]"
+          style={{
+            "--x": `${hoverMousePos.x}px`,
+            "--y": `${hoverMousePos.y}px`
+          } as React.CSSProperties}
+        />
+        <Search className="w-5 h-5 text-slate-400 group-hover:text-white transition-colors relative z-10" />
+        <span className="flex-1 text-slate-500 text-left text-sm md:text-base select-none font-sans relative z-10">
           Search slang, guides, collections... (Press <kbd className="font-mono text-xs px-1.5 py-0.5 rounded bg-slate-900 border border-slate-800">⌘K</kbd>)
         </span>
-        <Mic onClick={handleMicClick} className="w-4 h-4 text-slate-400 hover:text-white transition-colors cursor-pointer" />
+        <Mic onClick={handleMicClick} className="w-4 h-4 text-slate-400 hover:text-white transition-colors cursor-pointer relative z-10" />
       </div>
 
       {/* Full-screen command palette overlay */}

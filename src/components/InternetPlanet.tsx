@@ -50,6 +50,21 @@ const STATIC_DRIFT_PARTICLES = Array.from({ length: 45 }, (_, i) => {
   return { x, y, vx, vy, size };
 });
 
+const STATIC_ORBIT_PARTICLES = Array.from({ length: 70 }, (_, i) => {
+  const theta = Math.acos(2 * (Math.abs(Math.sin(i * 31.45)) % 1.0) - 1);
+  const phi = (Math.abs(Math.sin(i * 87.23)) % 1.0) * Math.PI * 2;
+  const radiusOffset = 1.02 + (Math.abs(Math.sin(i * 12.56)) % 1.0) * 0.22;
+  const speed = 0.00015 + (Math.abs(Math.sin(i * 9.87)) % 1.0) * 0.0003;
+  return {
+    theta,
+    phi,
+    radiusOffset,
+    speed,
+    size: 0.6 + (Math.abs(Math.sin(i * 6.34)) % 1.0) * 1.5,
+    glow: (Math.abs(Math.sin(i * 22.1)) % 1.0) > 0.65
+  };
+});
+
 const categoryStats: Record<string, { words: number; guides: number; trending: string }> = {
   memes: { words: 142, guides: 18, trending: "skibidi" },
   gaming: { words: 186, guides: 24, trending: "sigma" },
@@ -215,19 +230,6 @@ export function InternetPlanet({ onTrackNodes }: InternetPlanetProps) {
 
       const focalLength = sphereRadius * 1.5;
 
-      // A. DRAW NEBULA CORE AURORA GRADIENTS
-      const auroraGrad = ctx.createRadialGradient(
-        centerX, centerY, sphereRadius * 0.15,
-        centerX, centerY, sphereRadius * 1.9
-      );
-      auroraGrad.addColorStop(0, "rgba(255, 106, 26, 0.04)"); // Warm orange glow core
-      auroraGrad.addColorStop(0.5, "rgba(138, 108, 255, 0.025)"); // Violet boundary glow
-      auroraGrad.addColorStop(1, "rgba(0, 0, 0, 0)");
-      ctx.fillStyle = auroraGrad;
-      ctx.beginPath();
-      ctx.arc(centerX, centerY, sphereRadius * 2.2, 0, Math.PI * 2);
-      ctx.fill();
-
       // B. DRAW SPACE ENVIRONMENT STARS
       STATIC_STARS.forEach(star => {
         const opacity = 0.2 + Math.abs(Math.sin(Date.now() * star.blinkSpeed + star.phase)) * 0.6;
@@ -245,7 +247,7 @@ export function InternetPlanet({ onTrackNodes }: InternetPlanetProps) {
           if (part.y < 0) part.y = 1.0;
           if (part.y > 1.0) part.y = 0;
         }
-        ctx.fillStyle = "rgba(255, 179, 71, 0.15)";
+        ctx.fillStyle = "rgba(255, 179, 71, 0.12)";
         ctx.beginPath();
         ctx.arc(part.x * canvas.width, part.y * canvas.height, part.size, 0, Math.PI * 2);
         ctx.fill();
@@ -261,7 +263,80 @@ export function InternetPlanet({ onTrackNodes }: InternetPlanetProps) {
       const cosX = Math.cos(tiltX);
       const sinX = Math.sin(tiltX);
 
-      // E. PERSPECTIVE PROJECT ALL NODES
+      // E. DRAW GLOWING ATMOSPHERE BACKDROP
+      const atmosGrad = ctx.createRadialGradient(
+        centerX, centerY, sphereRadius * 0.85,
+        centerX, centerY, sphereRadius * 1.15
+      );
+      atmosGrad.addColorStop(0, "rgba(255, 106, 26, 0.14)");
+      atmosGrad.addColorStop(0.5, "rgba(138, 108, 255, 0.06)");
+      atmosGrad.addColorStop(1, "rgba(0, 0, 0, 0)");
+      ctx.fillStyle = atmosGrad;
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, sphereRadius * 1.25, 0, Math.PI * 2);
+      ctx.fill();
+
+      // F. DRAW TOP-RIGHT ORANGE RIM LIGHT HIGHLIGHT
+      const rimGrad = ctx.createRadialGradient(
+        centerX + sphereRadius * 0.18, centerY - sphereRadius * 0.18, sphereRadius * 0.75,
+        centerX + sphereRadius * 0.3, centerY - sphereRadius * 0.3, sphereRadius * 1.05
+      );
+      rimGrad.addColorStop(0, "rgba(255, 145, 65, 0.35)");
+      rimGrad.addColorStop(0.5, "rgba(255, 106, 26, 0.12)");
+      rimGrad.addColorStop(1, "rgba(0, 0, 0, 0)");
+      ctx.fillStyle = rimGrad;
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, sphereRadius, 0, Math.PI * 2);
+      ctx.fill();
+
+      // G. DRAW VOLUMETRIC CORE FOG
+      const fogGrad = ctx.createRadialGradient(
+        centerX, centerY, 0,
+        centerX, centerY, sphereRadius * 0.8
+      );
+      fogGrad.addColorStop(0, "rgba(255, 106, 26, 0.08)");
+      fogGrad.addColorStop(0.6, "rgba(138, 108, 255, 0.035)");
+      fogGrad.addColorStop(1, "rgba(0, 0, 0, 0)");
+      ctx.fillStyle = fogGrad;
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, sphereRadius * 0.8, 0, Math.PI * 2);
+      ctx.fill();
+
+      // H. PERSPECTIVE PROJECT ORBIT PARTICLES
+      const projectedOrbitParticles = STATIC_ORBIT_PARTICLES.map((part) => {
+        const activePhi = part.phi + rotationY * 1.2; // spin slightly offset speed
+        const px = Math.sin(part.theta) * Math.cos(activePhi) * part.radiusOffset;
+        const py = Math.sin(part.theta) * Math.sin(activePhi) * part.radiusOffset;
+        const pz = Math.cos(part.theta);
+
+        const rotY = py * cosX - pz * sinX;
+        const rotZ = py * sinX + pz * cosX;
+
+        const scale = focalLength / (focalLength + rotZ * sphereRadius);
+        const screenX = centerX + px * sphereRadius * scale;
+        const screenY = centerY + rotY * sphereRadius * scale;
+
+        return {
+          projX: screenX,
+          projY: screenY,
+          projZ: rotZ,
+          size: part.size * scale,
+          glow: part.glow
+        };
+      });
+
+      // I. RENDER BACKGROUND ORBIT PARTICLES (depth > 0)
+      projectedOrbitParticles.forEach(part => {
+        if (part.projZ > 0.0) {
+          const alpha = Math.max(0, 1 - part.projZ) * 0.45;
+          ctx.fillStyle = part.glow ? `rgba(255, 138, 61, ${alpha})` : `rgba(138, 108, 255, ${alpha * 0.65})`;
+          ctx.beginPath();
+          ctx.arc(part.projX, part.projY, part.size, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      });
+
+      // J. PERSPECTIVE PROJECT ALL NODES
       const projected = tempNodes.map((node) => {
         const x1 = node.x * cosY - node.z * sinY;
         const z1 = node.x * sinY + node.z * cosY;
@@ -285,7 +360,7 @@ export function InternetPlanet({ onTrackNodes }: InternetPlanetProps) {
       const trackedKeyNodes: TrackedNode[] = [];
       let foundHoveredNode: { id: string; label: string; x: number; y: number } | null = null;
 
-      // F. RENDER CONNECTION LINES
+      // K. RENDER CONNECTION LINES
       ctx.lineWidth = 0.95;
       projected.forEach((nodeA) => {
         if (nodeA.projZ > 0.15) return;
@@ -308,14 +383,14 @@ export function InternetPlanet({ onTrackNodes }: InternetPlanetProps) {
             ctx.strokeStyle = `rgba(255, 106, 26, ${depthAlpha * 0.42})`;
             ctx.lineWidth = 1.35;
           } else {
-            ctx.strokeStyle = `rgba(255, 106, 26, ${depthAlpha * 0.11})`;
+            ctx.strokeStyle = `rgba(255, 106, 26, ${depthAlpha * 0.13})`;
             ctx.lineWidth = 0.75;
           }
           ctx.stroke();
         });
       });
 
-      // G. DRAW DATA CONNECTIONS PULSES
+      // L. DRAW DATA CONNECTIONS PULSES
       pulsePaths.forEach((pulse) => {
         const nodeA = projected[pulse.startIdx];
         const nodeB = projected[pulse.endIdx];
@@ -328,25 +403,34 @@ export function InternetPlanet({ onTrackNodes }: InternetPlanetProps) {
 
           ctx.beginPath();
           ctx.arc(px, py, 1.8, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(255, 179, 71, ${depthAlpha * 0.75})`;
+          ctx.fillStyle = `rgba(255, 154, 71, ${depthAlpha * 0.85})`;
           ctx.fill();
         }
 
         if (!prefersReducedMotion) {
           pulse.progress += pulse.speed;
-          if (pulse.progress >= 1.0) {
+          if (pulse.progress > 1.0) {
             pulse.progress = 0;
-            pulse.startIdx = pulse.endIdx;
+            pulse.startIdx = Math.floor(Math.random() * tempNodes.length);
             const conns = tempNodes[pulse.startIdx].connections;
             pulse.endIdx = conns[Math.floor(Math.random() * conns.length)];
           }
         }
       });
 
-      // H. RENDER KEY CATEGORIES AND NODES DOTS
-      projected.forEach((node) => {
-        if (node.projZ > 0.12) return;
+      // M. RENDER FOREGROUND ORBIT PARTICLES (depth <= 0)
+      projectedOrbitParticles.forEach(part => {
+        if (part.projZ <= 0.0) {
+          const alpha = Math.max(0, 1 - part.projZ) * 0.75;
+          ctx.fillStyle = part.glow ? `rgba(255, 160, 80, ${alpha})` : `rgba(180, 160, 255, ${alpha * 0.85})`;
+          ctx.beginPath();
+          ctx.arc(part.projX, part.projY, part.size, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      });
 
+      // N. RENDER NODE POINTS (Key Nodes & Simple Data Dots)
+      projected.forEach((node) => {
         const depthAlpha = Math.max(0, 1 - node.projZ);
         
         // Dynamic hovered distance calculations
@@ -356,17 +440,23 @@ export function InternetPlanet({ onTrackNodes }: InternetPlanetProps) {
 
         ctx.beginPath();
         if (node.isKey) {
-          // Glow overlay mapping
-          ctx.arc(node.projX, node.projY, 4.5 * hoverGlow, 0, Math.PI * 2);
+          // Glow outer halo
+          ctx.arc(node.projX, node.projY, 5.5 * hoverGlow, 0, Math.PI * 2);
           ctx.fillStyle = isHovered 
-            ? `rgba(255, 138, 61, ${depthAlpha * 0.95})` 
-            : `rgba(255, 106, 26, ${depthAlpha * 0.95})`;
+            ? `rgba(255, 150, 75, ${depthAlpha * 0.95})` 
+            : `rgba(255, 106, 26, ${depthAlpha * 0.85})`;
+          ctx.fill();
+
+          // Core bright white center highlight
+          ctx.beginPath();
+          ctx.arc(node.projX, node.projY, 1.8 * hoverGlow, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(255, 255, 255, ${depthAlpha * 0.95})`;
           ctx.fill();
 
           ctx.beginPath();
           ctx.arc(node.projX, node.projY, 11 * hoverGlow, 0, Math.PI * 2);
           ctx.strokeStyle = isHovered 
-            ? `rgba(255, 138, 61, ${depthAlpha * 0.65})` 
+            ? `rgba(255, 160, 80, ${depthAlpha * 0.65})` 
             : `rgba(255, 138, 61, ${depthAlpha * 0.32})`;
           ctx.lineWidth = isHovered ? 1.6 : 0.85;
           ctx.stroke();
@@ -381,12 +471,18 @@ export function InternetPlanet({ onTrackNodes }: InternetPlanetProps) {
           }
 
           if (node.keyId && node.keyLabel) {
+            // Apply slow random time float to category label coordinates to prevent overlapping
+            const time = Date.now() * 0.0006;
+            const idxOffset = node.connections[0] || 1;
+            const floatX = Math.sin(time + idxOffset * 2.3) * 12;
+            const floatY = Math.cos(time + idxOffset * 1.7) * 12;
+
             trackedKeyNodes.push({
               id: node.keyId,
               label: node.keyLabel,
-              x: node.projX,
-              y: node.projY,
-              visible: node.projZ <= 0.06,
+              x: node.projX + floatX,
+              y: node.projY + floatY,
+              visible: node.projZ <= 0.08,
             });
 
             if (isHovered) {
