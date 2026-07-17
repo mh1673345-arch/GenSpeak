@@ -5,7 +5,7 @@ import { motion, useScroll, useTransform, useMotionValue, useSpring } from "fram
 import { 
   Cpu, Terminal, Globe, TrendingUp, 
   BookOpen, FolderOpen, History, Grid, ArrowRight,
-  Sparkles, Award, Zap, Star, ArrowUpRight
+  Sparkles, Award, Zap, Star, ArrowUpRight, ShieldCheck, Layers, Users, RotateCw, Search, ChevronRight, Activity, Clock
 } from "lucide-react";
 import { SearchBox } from "./SearchBox";
 import { WordData, mockWords } from "../data/mockWords";
@@ -14,6 +14,84 @@ import { useRouter } from "next/navigation";
 import type { TrackedNode } from "./InternetPlanet";
 import { useAuth } from "../context/AuthContext";
 import dynamic from "next/dynamic";
+import { AnimatedCounter } from "./AnimatedCounter";
+
+const STATS = [
+  { value: 50, suffix: "+", label: "New slang terms every month", desc: "Our lexicography team maps modern online vernacular." },
+  { value: 5, suffix: "B+", label: "Internet users globally", desc: "Connecting distinct cultures across global networks." },
+  { value: 1000, suffix: "+", label: "Memes born every week", desc: "Absurdist imagery and visual formats mutating daily." },
+  { value: 10, suffix: "M+", label: "AI prompts written daily", desc: "Humanity learning to communicate with machines." },
+  { value: 300, suffix: "+", label: "New abbreviations annually", desc: "Accelerating the speed of digital text communication." }
+];
+
+const GENSPEAK_BENEFITS = [
+  { title: "Internet slang", desc: "Understand rising Gen Alpha & Gen Z vernacular.", glow: "rgba(255, 106, 26, 0.04)" },
+  { title: "Meme culture", desc: "Decipher visual formats, cultural origins, and variations.", glow: "rgba(138, 108, 255, 0.04)" },
+  { title: "AI terminology", desc: "Understand prompts, LLM parameters, and agentic workflows.", glow: "rgba(56, 189, 248, 0.04)" },
+  { title: "Gaming language", desc: "Decode esports jargons, MMO acronyms, and speedruns.", glow: "rgba(244, 63, 94, 0.04)" },
+  { title: "Creator economy", desc: "Understand stream vernacular, algorithms, and monetization.", glow: "rgba(234, 179, 8, 0.04)" },
+  { title: "Business buzzwords", desc: "Decode startup pitches, VC jargons, and corporate speak.", glow: "rgba(16, 185, 129, 0.04)" },
+  { title: "Crypto vocabulary", desc: "Understand DeFi protocols, Web3 parameters, and NFT tags.", glow: "rgba(168, 85, 247, 0.04)" },
+  { title: "Tech communities", desc: "Understand developer lingo and GitHub/Reddit subcultures.", glow: "rgba(100, 116, 139, 0.04)" }
+];
+
+const TIMELINE_STEPS = [
+  { platform: "Reddit", desc: "Memes and subculture jokes are incubated.", label: "Incubation" },
+  { platform: "Twitter/X", desc: "Text reactions and cultural commentary scale.", label: "Amplification" },
+  { platform: "TikTok", desc: "Vertical videos and loop audio trends expand.", label: "Saturation" },
+  { platform: "Discord", desc: "Private server slang goes viral locally.", label: "Codification" },
+  { platform: "YouTube", desc: "Essays and shorts review cultural shifts.", label: "Mainstreaming" },
+  { platform: "Instagram", desc: "Aesthetic lifestyle formats adapt terms.", label: "Commercialization" },
+  { platform: "Mainstream", desc: "Corporate marketing and news anchors adopt terms.", label: "Adoption" }
+];
+
+const TRENDING_WORDS_LIST = [
+  { term: "rizz", popularity: "98%", category: "slang", definition: "Charm or attractiveness, especially the ability to romance a partner." },
+  { term: "skibidi", popularity: "92%", category: "brainrot", definition: "A general modifier meaning cool, bad, or interesting depending on context." },
+  { term: "gyatt", popularity: "89%", category: "slang", definition: "An exclamation of surprise or approval, often referring to physical appearance." },
+  { term: "sigma", popularity: "87%", category: "memes", definition: "An independent, successful male who lives outside of societal expectations." },
+  { term: "mewing", popularity: "85%", category: "brainrot", definition: "A tongue placement technique meant to define the jawline, popularized in looksmaxing." },
+  { term: "delulu", popularity: "82%", category: "tiktok", definition: "Short for delusional; believing or hoping for something unrealistic." },
+  { term: "cap", popularity: "80%", category: "slang", definition: "To lie or exaggerate; 'no cap' means telling the truth." },
+  { term: "fanum tax", popularity: "78%", category: "tiktok", definition: "The act of stealing food from a friend, popularized by streamer Fanum." },
+  { term: "looksmaxing", popularity: "75%", category: "memes", definition: "The practice of attempting to maximize one's physical attractiveness." },
+  { term: "npc", popularity: "74%", category: "gaming", definition: "Non-playable character; used to describe someone who lacks independent thought." }
+];
+
+const FEATURED_COLLECTIONS_LIST = [
+  { title: "Gen Z Dictionary", count: 245, readTime: "12 min", difficulty: "Intermediate", glow: "rgba(255, 106, 26, 0.04)", slug: "slang" },
+  { title: "AI Glossary", count: 89, readTime: "6 min", difficulty: "Advanced", glow: "rgba(138, 108, 255, 0.04)", slug: "ai" },
+  { title: "Crypto Terms", count: 76, readTime: "5 min", difficulty: "Advanced", glow: "rgba(56, 189, 248, 0.04)", slug: "crypto" },
+  { title: "Gaming Slang", count: 186, readTime: "10 min", difficulty: "Beginner", glow: "rgba(244, 63, 94, 0.04)", slug: "gaming" },
+  { title: "Discord Language", count: 112, readTime: "8 min", difficulty: "Beginner", glow: "rgba(100, 116, 139, 0.04)", slug: "history" },
+  { title: "TikTok Dictionary", count: 154, readTime: "9 min", difficulty: "Beginner", glow: "rgba(234, 179, 8, 0.04)", slug: "brainrot" },
+  { title: "Startup Buzzwords", count: 64, readTime: "4 min", difficulty: "Intermediate", glow: "rgba(16, 185, 129, 0.04)", slug: "slang" }
+];
+
+const EDUCATIONAL_CARDS = [
+  { title: "How memes evolve", desc: "Visual replication, mutation, and decay in the attention economy.", category: "Memeology", link: "/guides/complete-guide-to-gen-z-slang" },
+  { title: "History of internet slang", desc: "From 1980s Usenet acronyms (LOL, BRB) to modern brainrot.", category: "Linguistics", link: "/guides/complete-guide-to-gen-z-slang" },
+  { title: "Understanding Gen Alpha", desc: "Mapped behaviors of the first iPad-native generation.", category: "Sociology", link: "/guides/complete-guide-to-gen-z-slang" },
+  { title: "Why words go viral", desc: "Emotional valence, community status, and algorithmic amplification.", category: "Virality", link: "/guides/complete-guide-to-gen-z-slang" },
+  { title: "How AI changed language", desc: "The blending of natural language and prompt mechanics.", category: "AI & Tech", link: "/guides/complete-guide-to-gen-z-slang" },
+  { title: "Internet timeline", desc: "Decades of digital shift, from IRC chatrooms to agentic nets.", category: "Chronology", link: "/timeline" }
+];
+
+const TRUST_CARDS = [
+  { title: "Community Reviewed", desc: "Verified by a global moderator panel of cultural translators.", icon: "👥" },
+  { title: "AI Assisted", desc: "Cross-validated with state-of-the-art language models for accuracy.", icon: "🤖" },
+  { title: "Human Curated", desc: "Vetted by digital sociologists and expert lexicographers.", icon: "✍️" },
+  { title: "Updated Frequently", desc: "Real-time updates parsing active internet chats and memes.", icon: "🔄" },
+  { title: "Research Based", desc: "Aligned with corpus studies on modern computer-mediated speech.", icon: "🔬" },
+  { title: "Cross Referenced", desc: "Directly linked with originating platforms and context sources.", icon: "🔗" }
+];
+
+const DID_YOU_KNOW_FACTS = [
+  { fact: "LOL entered the Oxford English Dictionary in 2011.", category: "Etymology" },
+  { fact: "The word 'meme' was coined by Richard Dawkins in 1976, long before the internet existed.", category: "History" },
+  { fact: "The first set of emojis was created in 1999 by Shigetaka Kurita in Japan for mobile carriers.", category: "Design" },
+  { fact: "Rickrolling began in 2007 as a bait-and-switch link on 4chan pointing to Rick Astley's song.", category: "Memeology" }
+];
 
 const InternetPlanet = dynamic(() => import("./InternetPlanet").then(mod => mod.InternetPlanet), {
   ssr: false,
@@ -137,6 +215,14 @@ export function StorytellingJourney({ onSelectWord }: StorytellingJourneyProps) 
   const [trackedNodes, setTrackedNodes] = useState<TrackedNode[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(1200);
+
+  const [factIndex, setFactIndex] = useState(0);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setFactIndex((prev) => (prev + 1) % DID_YOU_KNOW_FACTS.length);
+    }, 8000);
+    return () => clearInterval(interval);
+  }, []);
 
   // Daily Challenge state
   const [challengeCompleted, setChallengeCompleted] = useState(false);
@@ -426,282 +512,396 @@ export function StorytellingJourney({ onSelectWord }: StorytellingJourneyProps) 
         <div className="h-24 w-full" />
       </section>
 
-      {/* NEW SECTION: TODAY'S INTERNET EXPERIENCES */}
-      <section className="relative w-full max-w-6xl mx-auto px-6 py-12 z-20 flex flex-col gap-8 text-left mt-24">
-        <div className="flex flex-col gap-1.5">
-          <span className="text-[10px] font-mono text-[#FF8A3D] uppercase tracking-widest flex items-center gap-1.5">
-            <Zap className="w-4 h-4" />
-            TODAY&apos;S DIGITAL PULSE
+      {/* SECTION 1 — INTERNET TODAY */}
+      <section className="relative w-full max-w-6xl mx-auto px-6 py-20 z-20 flex flex-col gap-10 border-t border-white/5 pt-20">
+        <div className="flex flex-col gap-2 text-center items-center">
+          <span className="text-[10px] font-mono text-[#FF8A3D] uppercase tracking-widest bg-[#FF8A3D]/5 border border-[#FF8A3D]/10 px-2.5 py-0.5 rounded-full">
+            Modern Digital Pulse
           </span>
-          <h2 className="text-3xl font-black font-display text-white tracking-tight">
-            Today&apos;s Internet
+          <h2 className="text-3xl md:text-4xl font-black font-display text-white tracking-tight">
+            The Internet Never Stops Changing
           </h2>
-          <p className="text-xs text-slate-400 max-w-md font-sans">
-            Your live daily briefing on trending slangs, memes, gaming overlays, and interactive cultural challenges.
+          <p className="text-xs text-slate-400 max-w-md">
+            Language shifts at the speed of online discourse. Here is a snapshot of current internet culture metrics.
           </p>
         </div>
 
-        {/* Grids items layout */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
-          
-          {/* Card 1: Interactive Daily Challenge widget (Takes 2 columns) */}
-          <div className="md:col-span-2 rounded-3xl border border-white/5 bg-[#111217]/20 p-6 flex flex-col justify-between gap-6 relative overflow-hidden text-left">
-            <div className="absolute top-0 right-0 w-44 h-44 bg-gradient-to-br from-primary-pink/10 to-transparent blur-2xl rounded-full" />
-            <div className="flex flex-col gap-4 relative z-10">
-              <div className="flex justify-between items-center border-b border-white/5 pb-3">
-                <span className="text-[10px] font-mono font-bold tracking-widest text-primary-pink uppercase flex items-center gap-1.5">
-                  <Award className="w-4 h-4 animate-bounce" />
-                  {activeChallenge.type}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 items-stretch">
+          {STATS.map((stat, idx) => (
+            <div key={idx} className="rounded-2xl border border-white/[0.05] bg-[#0C0D12]/40 p-6 flex flex-col justify-between gap-4 text-left transition-all duration-300 hover:border-white/[0.12] hover:bg-[#12131C]/60 hover:scale-[1.02] shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
+              <div className="flex flex-col gap-1">
+                <span className="text-4xl font-black text-white leading-none font-display">
+                  <AnimatedCounter value={stat.value} suffix={stat.suffix} />
                 </span>
-                <span className="text-[10px] font-mono font-bold text-accent-cyan bg-accent-cyan/5 px-2.5 py-1 rounded border border-accent-cyan/15">
-                  +{activeChallenge.xp} XP REWARD
+                <span className="text-xs font-mono font-bold text-[#FF8A3D] mt-2 leading-tight">
+                  {stat.label}
                 </span>
               </div>
-
-              <h4 className="font-display font-bold text-lg text-white leading-snug">{activeChallenge.question}</h4>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
-                {activeChallenge.options.map((opt, idx) => {
-                  const isSelected = selectedOption === opt;
-                  const isAnswer = opt === activeChallenge.answer;
-
-                  let borderClass = "border-white/5 bg-black/35 hover:border-white/15 text-slate-300";
-                  if (challengeCompleted) {
-                    if (isAnswer) borderClass = "border-green-500/35 bg-green-500/10 text-green-400";
-                    else if (isSelected) borderClass = "border-red-500/35 bg-red-500/10 text-red-400";
-                  }
-
-                  return (
-                    <button
-                      key={idx}
-                      onClick={() => handleSelectOption(opt)}
-                      disabled={challengeCompleted}
-                      className={`w-full py-3.5 px-4 rounded-xl border text-xs font-mono font-bold tracking-wider transition-all duration-300 flex items-center gap-3 justify-start ${
-                        !challengeCompleted ? "cursor-pointer active:scale-95" : "cursor-not-allowed"
-                      } ${borderClass}`}
-                    >
-                      <span className="w-5 h-5 rounded-lg bg-white/[0.02] border border-white/5 flex items-center justify-center text-[10px]">{String.fromCharCode(65 + idx)}</span>
-                      <span className="truncate">{opt}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between border-t border-white/5 pt-4 mt-2 text-[10px] font-mono text-slate-500 relative z-10">
-              <span className="flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-accent-orange" />
-                Active Streak: {user ? user.streak : 0} days
-              </span>
-              <span>Refreshes daily at midnight</span>
-            </div>
-          </div>
-
-          {/* Card 2: Trending Word of the Day */}
-          <div className="rounded-3xl border border-white/5 bg-[#111217]/20 p-6 flex flex-col justify-between gap-5 text-left relative overflow-hidden">
-            <div className="flex flex-col gap-2">
-              <span className="text-[9px] font-mono font-bold tracking-widest text-[#FF8A3D] uppercase">Trending Word</span>
-              <h4 className="font-display font-black text-2xl text-white uppercase mt-1">rizz</h4>
-              <p className="text-xs text-slate-400 leading-relaxed font-sans mt-1.5">
-                Clipping of &apos;charisma&apos;, representing the capacity to attract or seduce others through charm.
+              <p className="text-[11px] text-slate-500 font-sans leading-relaxed">
+                {stat.desc}
               </p>
-            </div>
-            <Link
-              href="/word/rizz"
-              className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#FF8A3D] hover:text-white flex items-center gap-1.5 w-fit"
-            >
-              <span>Explore Etymology</span>
-              <ArrowUpRight className="w-3.5 h-3.5" />
-            </Link>
-          </div>
-
-          {/* Card 3: Meme of the Day */}
-          <div className="rounded-3xl border border-white/5 bg-[#111217]/20 p-6 flex flex-col justify-between gap-4 text-left">
-            <div className="flex flex-col gap-2">
-              <span className="text-[9px] font-mono font-bold tracking-widest text-[#4D9EFF] uppercase">Meme of the Day</span>
-              <h4 className="font-display font-bold text-base text-white mt-1">Skibidi Toilet</h4>
-              <p className="text-xs text-slate-400 leading-relaxed font-sans mt-0.5">
-                The absurdist YouTube Shorts series by DaFuq!?Boom! that triggered a massive lexical shift in Gen Alpha subculture.
-              </p>
-            </div>
-            <div className="flex items-center justify-between text-[10px] font-mono text-slate-500">
-              <span>Platform: YouTube</span>
-              <span>Status: Viral</span>
-            </div>
-          </div>
-
-          {/* Card 4: AI Buzzword */}
-          <div className="rounded-3xl border border-white/5 bg-[#111217]/20 p-6 flex flex-col justify-between gap-4 text-left">
-            <div className="flex flex-col gap-2">
-              <span className="text-[9px] font-mono font-bold tracking-widest text-[#FFB347] uppercase">AI Buzzword</span>
-              <h4 className="font-display font-bold text-base text-white mt-1">RAG Context Mapping</h4>
-              <p className="text-xs text-slate-400 leading-relaxed font-sans mt-0.5">
-                Retrieval-Augmented Generation: feeding structured database entries as ground truth context to prevent LLM hallucinations.
-              </p>
-            </div>
-            <span className="text-[10px] font-mono text-slate-500">Utility: Hallucination protection</span>
-          </div>
-
-          {/* Card 5: Personalization / Recs block */}
-          <div className="rounded-3xl border border-white/5 bg-[#111217]/20 p-6 flex flex-col justify-between gap-4 text-left relative overflow-hidden">
-            {user ? (
-              <>
-                <div className="flex flex-col gap-2 z-10">
-                  <span className="text-[9px] font-mono font-bold tracking-widest text-[#FF8A3D] uppercase">Recommended for {user.name.split(" ")[0]}</span>
-                  <h4 className="font-display font-bold text-base text-white mt-1">Discover Mewing & Mogging</h4>
-                  <p className="text-xs text-slate-400 leading-relaxed font-sans mt-0.5">
-                    Based on your saved search of Gen Alpha brainrot categories, read the complete guide to looksmaxing.
-                  </p>
-                </div>
-                <Link
-                  href="/category/brainrot"
-                  className="text-[10px] font-mono font-bold uppercase text-[#FF8A3D] hover:text-white flex items-center gap-1 mt-1 z-10"
-                >
-                  <span>View Recommendations</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </Link>
-              </>
-            ) : (
-              <>
-                <div className="flex flex-col gap-2">
-                  <span className="text-[9px] font-mono font-bold tracking-widest text-slate-500 uppercase font-bold">Personalization Desk</span>
-                  <h4 className="font-display font-bold text-base text-white mt-1">Unlock Slang Recs</h4>
-                  <p className="text-xs text-slate-500 leading-relaxed font-sans mt-0.5">
-                    Log in to unlock personalized slang recommendations, track streaks, and earn daily XP badges!
-                  </p>
-                </div>
-                <Link
-                  href="/login"
-                  className="px-4 py-2 text-center rounded-xl bg-white/[0.03] border border-white/5 hover:border-white/10 text-[10px] font-mono font-bold uppercase tracking-wider text-white transition-colors"
-                >
-                  Sign In Account
-                </Link>
-              </>
-            )}
-          </div>
-
-        </div>
-      </section>
-
-      {/* NEW SECTION: TRENDING TODAY MODULE */}
-      <section className="relative w-full max-w-6xl mx-auto px-6 py-12 z-20 flex flex-col gap-8 text-left border-t border-white/5 pt-16">
-        <div className="flex flex-col gap-1">
-          <span className="text-[10px] font-mono text-[#4D9EFF] uppercase tracking-widest flex items-center gap-1.5">
-            <TrendingUp className="w-4 h-4 animate-pulse" />
-            FASTEST CLIPS AND SEARCHES
-          </span>
-          <h2 className="text-3xl font-black font-display text-white tracking-tight">
-            Trending Today
-          </h2>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-start">
-          
-          {/* Col 1: Fastest Growing */}
-          <div className="flex flex-col gap-4">
-            <h4 className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-widest border-b border-white/5 pb-2">Fastest Growing</h4>
-            {[
-              { term: "rizz", pct: "+94%" },
-              { term: "skibidi", pct: "+88%" },
-              { term: "mewing", pct: "+76%" }
-            ].map((item, idx) => (
-              <div key={idx} className="flex justify-between items-center text-xs font-sans">
-                <Link href={`/word/${item.term}`} className="text-white hover:text-[#FF8A3D] font-bold lowercase">{item.term}</Link>
-                <span className="font-mono text-green-400 font-bold bg-green-400/5 px-2 py-0.5 rounded text-[10px]">{item.pct}</span>
-              </div>
-            ))}
-          </div>
-
-          {/* Col 2: Most Searched */}
-          <div className="flex flex-col gap-4">
-            <h4 className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-widest border-b border-white/5 pb-2">Most Searched</h4>
-            {[
-              { term: "gyatt", count: "4.3k searches" },
-              { term: "sigma", count: "3.2k searches" },
-              { term: "npc", count: "2.1k searches" }
-            ].map((item, idx) => (
-              <div key={idx} className="flex justify-between items-center text-xs font-sans">
-                <Link href={`/word/${item.term}`} className="text-white hover:text-[#FF8A3D] font-bold lowercase">{item.term}</Link>
-                <span className="font-mono text-slate-500 text-[10px]">{item.count}</span>
-              </div>
-            ))}
-          </div>
-
-          {/* Col 3: Newest Guides */}
-          <div className="flex flex-col gap-4">
-            <h4 className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-widest border-b border-white/5 pb-2">Newest Guides</h4>
-            {[
-              { title: "Understanding Brainrot", slug: "complete-guide-to-gen-z-slang" },
-              { title: "Parenting in Slang Era", slug: "complete-guide-to-gen-z-slang" }
-            ].map((item, idx) => (
-              <Link 
-                key={idx} 
-                href={`/guides/${item.slug}`} 
-                className="text-xs text-white hover:text-[#FF8A3D] font-sans font-bold leading-normal text-left"
-              >
-                {item.title}
-              </Link>
-            ))}
-          </div>
-
-          {/* Col 4: Popular Collections */}
-          <div className="flex flex-col gap-4">
-            <h4 className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-widest border-b border-white/5 pb-2">Popular Decks</h4>
-            {[
-              { title: "Top TikTok Slang", slug: "top-tiktok-slang" },
-              { title: "Popular Gaming Jargons", slug: "top-tiktok-slang" }
-            ].map((item, idx) => (
-              <Link 
-                key={idx} 
-                href={`/collections/${item.slug}`} 
-                className="text-xs text-white hover:text-[#FF8A3D] font-sans font-bold leading-normal text-left"
-              >
-                {item.title}
-              </Link>
-            ))}
-          </div>
-
-        </div>
-      </section>
-
-      {/* NEW SECTION: EDITOR'S PICKS */}
-      <section className="relative w-full max-w-6xl mx-auto px-6 py-12 z-20 flex flex-col gap-8 text-left border-t border-white/5 pt-16">
-        <div className="flex flex-col gap-1">
-          <span className="text-[10px] font-mono text-[#FF8A3D] uppercase tracking-widest flex items-center gap-1">
-            <Star className="w-3.5 h-3.5" />
-            HAND-PICKED CULTURAL STANDARDS
-          </span>
-          <h2 className="text-3xl font-black font-display text-white tracking-tight">
-            Editor&apos;s Picks
-          </h2>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {[
-            { type: "FEATURED SLANG", title: "sigma", desc: "Originally referencing independent personality archetypes, ironized globally as cool indicator.", link: "/word/sigma", label: "Read Slang Definition" },
-            { type: "FEATURED GUIDE", title: "Complete Gen Z Slang", desc: "Our ultimate handbook designed for parents and teachers to understand slang syntaxes.", link: "/guides/complete-guide-to-gen-z-slang", label: "Open Handbook Guide" },
-            { type: "FEATURED DECK", title: "TikTok Virals 2026", desc: "A curated collection mapping vertical loop audio trends and commenting slangs.", link: "/collections/top-tiktok-slang", label: "View Collection Deck" }
-          ].map((item, idx) => (
-            <div key={idx} className="rounded-2xl border border-white/5 bg-[#111217]/10 p-6 flex flex-col justify-between gap-5 text-left hover:border-[#FF8A3D]/20 transition-colors">
-              <div className="flex flex-col gap-2">
-                <span className="text-[8px] font-mono text-slate-500 uppercase tracking-widest">{item.type}</span>
-                <h4 className="font-display font-bold text-lg text-white capitalize mt-1">{item.title}</h4>
-                <p className="text-xs text-slate-400 leading-relaxed font-sans mt-0.5">{item.desc}</p>
-              </div>
-              <Link
-                href={item.link}
-                className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#FF8A3D] hover:text-white flex items-center gap-1.5 w-fit"
-              >
-                <span>{item.label}</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
             </div>
           ))}
         </div>
       </section>
 
-      {/* CHOOSE YOUR JOURNEY SECTION */}
-      <section className="relative max-w-6xl mx-auto px-6 py-16 z-20 flex flex-col gap-10 border-t border-white/5 pt-20">
+      {/* SECTION 2 — WHY GENSPEAK? */}
+      <section className="relative w-full max-w-6xl mx-auto px-6 py-20 z-20 flex flex-col gap-10 border-t border-white/5 pt-20">
+        <div className="flex flex-col gap-2 text-center items-center">
+          <span className="text-[10px] font-mono text-[#8A6CFF] uppercase tracking-widest bg-[#8A6CFF]/5 border border-[#8A6CFF]/10 px-2.5 py-0.5 rounded-full">
+            Wiki & Translator Core
+          </span>
+          <h2 className="text-3xl md:text-4xl font-black font-display text-white tracking-tight">
+            More than a Dictionary
+          </h2>
+          <p className="text-xs text-slate-400 max-w-md">
+            GenSpeak goes beyond static lexical lookups. We track, explain, and contextualize shifting online dialects.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {GENSPEAK_BENEFITS.map((benefit, idx) => (
+            <div 
+              key={idx} 
+              style={{ boxShadow: `inset 0 0 20px ${benefit.glow}, 0 4px 24px rgba(0,0,0,0.5)` }}
+              className="rounded-2xl border border-white/[0.06] bg-[#090A0F]/90 p-6 flex flex-col justify-between gap-4 text-left hover:border-white/[0.14] transition-all duration-300 hover:scale-[1.02]"
+            >
+              <div className="flex flex-col gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-[#FF6A1A] animate-pulse" />
+                <h4 className="font-display font-bold text-base text-white capitalize mt-1">
+                  {benefit.title}
+                </h4>
+                <p className="text-xs text-slate-400 leading-relaxed font-sans mt-0.5">
+                  {benefit.desc}
+                </p>
+              </div>
+              <span className="text-[9px] font-mono text-slate-500 uppercase tracking-widest">
+                Covered Index
+              </span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* SECTION 3 — HOW INTERNET CULTURE SPREADS */}
+      <section className="relative w-full max-w-6xl mx-auto px-6 py-20 z-20 flex flex-col gap-10 border-t border-white/5 pt-20">
+        <div className="flex flex-col gap-2 text-center items-center">
+          <span className="text-[10px] font-mono text-[#FF8A3D] uppercase tracking-widest bg-[#FF8A3D]/5 border border-[#FF8A3D]/10 px-2.5 py-0.5 rounded-full">
+            Cultural Propagation Flow
+          </span>
+          <h2 className="text-3xl md:text-4xl font-black font-display text-white tracking-tight">
+            How Internet Culture Spreads
+          </h2>
+          <p className="text-xs text-slate-400 max-w-md">
+            Slang expressions mutate and travel across platform gateways before entering mainstream vocabulary.
+          </p>
+        </div>
+
+        {/* Scrollable horizontal wrapper with track lines */}
+        <div className="relative w-full overflow-x-auto pb-6 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+          <div className="flex gap-6 min-w-[1000px] px-4 justify-between relative py-4">
+            
+            {/* SVG Connecting Timeline Track */}
+            <div className="absolute top-12 left-12 right-12 h-[1px] bg-gradient-to-r from-orange-500 via-[#8A6CFF] to-pink-500 pointer-events-none opacity-20 z-0" />
+            
+            {TIMELINE_STEPS.map((step, idx) => (
+              <div key={idx} className="flex-1 flex flex-col items-center text-center gap-4 relative z-10 max-w-[160px] group">
+                {/* Platform Node Dot */}
+                <div className="w-16 h-16 rounded-2xl bg-[#090A0F]/90 border border-white/[0.08] flex flex-col items-center justify-center text-white group-hover:border-[#FF6A1A]/40 transition-all duration-300 shadow-xl group-hover:scale-110 relative group-hover:shadow-[#FF6A1A]/5">
+                  <span className="text-sm font-mono font-bold">0{idx + 1}</span>
+                  <span className="text-[9px] font-mono text-slate-500 uppercase mt-0.5 tracking-wider">{step.platform.split("/")[0]}</span>
+                  <div className="absolute inset-0 rounded-2xl bg-white/[0.01] opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-[radial-gradient(circle_at_center,rgba(255,106,26,0.1),transparent)]" />
+                </div>
+                
+                <div className="flex flex-col gap-1">
+                  <span className="text-xs font-mono text-[#FF8A3D] uppercase tracking-wider font-bold">{step.platform}</span>
+                  <span className="text-[9px] font-mono text-slate-500">{step.label}</span>
+                  <p className="text-[11px] text-slate-400 leading-relaxed font-sans mt-1.5">
+                    {step.desc}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION 4 — TRENDING TODAY */}
+      <section className="relative w-full max-w-6xl mx-auto px-6 py-20 z-20 flex flex-col gap-10 border-t border-white/5 pt-20">
+        <div className="flex flex-col gap-2 text-center items-center">
+          <span className="text-[10px] font-mono text-cyan-400 uppercase tracking-widest bg-cyan-400/5 border border-cyan-400/10 px-2.5 py-0.5 rounded-full">
+            Realtime Popularity Ranks
+          </span>
+          <h2 className="text-3xl md:text-4xl font-black font-display text-white tracking-tight">
+            Trending Today
+          </h2>
+          <p className="text-xs text-slate-400 max-w-md">
+            The ten fastest growing searches and expressions adopted in active conversations today.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+          {TRENDING_WORDS_LIST.map((word, idx) => (
+            <Link 
+              key={idx}
+              href={`/word/${word.term}`}
+              className="group rounded-2xl border border-white/[0.05] bg-[#0B0C10]/60 p-5 flex flex-col justify-between gap-4 text-left transition-all duration-300 hover:border-[#FF6A1A]/30 hover:bg-[#121319]/70 hover:scale-[1.02] shadow-[0_4px_24px_rgba(0,0,0,0.5)] cursor-pointer"
+            >
+              <div className="flex flex-col gap-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-[9px] font-mono text-slate-500 uppercase tracking-wider px-2 py-0.5 rounded bg-white/[0.02] border border-white/5">
+                    {word.category}
+                  </span>
+                  <span className="text-[9px] font-mono text-green-400 font-bold bg-green-400/5 px-1.5 py-0.5 rounded">
+                    {word.popularity}
+                  </span>
+                </div>
+                <h3 className="font-display font-black text-lg text-white group-hover:text-[#FF8A3D] transition-colors mt-1">
+                  {word.term}
+                </h3>
+                <p className="text-[11px] text-slate-400 leading-relaxed font-sans line-clamp-2">
+                  {word.definition}
+                </p>
+              </div>
+
+              <div className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-[#FF8A3D] group-hover:translate-x-1 transition-transform pt-1">
+                <span>View Article</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* SECTION 5 — FEATURED COLLECTIONS */}
+      <section className="relative w-full max-w-6xl mx-auto px-6 py-20 z-20 flex flex-col gap-10 border-t border-white/5 pt-20">
+        <div className="flex flex-col gap-2 text-center items-center">
+          <span className="text-[10px] font-mono text-pink-400 uppercase tracking-widest bg-pink-400/5 border border-pink-400/10 px-2.5 py-0.5 rounded-full">
+            Curated Lexicon Decks
+          </span>
+          <h2 className="text-3xl md:text-4xl font-black font-display text-white tracking-tight">
+            Featured Collections
+          </h2>
+          <p className="text-xs text-slate-400 max-w-md">
+            Hand-picked decks compiling terms and definitions grouped by platform and community usage.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {FEATURED_COLLECTIONS_LIST.map((col, idx) => (
+            <Link 
+              key={idx}
+              href={`/category/${col.slug}`}
+              className="group block cursor-pointer"
+            >
+              <div 
+                style={{ boxShadow: `inset 0 0 20px ${col.glow}, 0 4px 24px rgba(0,0,0,0.5)` }}
+                className="rounded-2xl border border-white/[0.06] bg-[#090A0F]/95 p-6 flex flex-col justify-between gap-5 text-left hover:border-[#FF6A1A]/35 transition-all duration-300 hover:scale-[1.02] min-h-[190px]"
+              >
+                <div className="flex flex-col gap-2">
+                  <div className="flex justify-between items-center text-[9px] font-mono text-slate-500">
+                    <span>{col.count} Words</span>
+                    <span>{col.readTime} Read</span>
+                  </div>
+                  <h3 className="font-display font-bold text-lg text-white group-hover:text-[#FF8A3D] transition-colors mt-2">
+                    {col.title}
+                  </h3>
+                </div>
+
+                <div className="flex items-center justify-between border-t border-white/5 pt-4 mt-2">
+                  <span className="text-[9px] font-mono text-slate-500 uppercase tracking-wider">
+                    {col.difficulty}
+                  </span>
+                  <ArrowRight className="w-4 h-4 text-slate-500 group-hover:text-[#FF8A3D] group-hover:translate-x-1 transition-all" />
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* SECTION 6 — LEARN INTERNET CULTURE */}
+      <section className="relative w-full max-w-6xl mx-auto px-6 py-20 z-20 flex flex-col gap-10 border-t border-white/5 pt-20">
+        <div className="flex flex-col gap-2 text-center items-center">
+          <span className="text-[10px] font-mono text-[#FF8A3D] uppercase tracking-widest bg-[#FF8A3D]/5 border border-[#FF8A3D]/10 px-2.5 py-0.5 rounded-full">
+            Educational Library
+          </span>
+          <h2 className="text-3xl md:text-4xl font-black font-display text-white tracking-tight">
+            Learn Internet Culture
+          </h2>
+          <p className="text-xs text-slate-400 max-w-md">
+            Articles and deep-dives mapping modern sociolinguistics, viral cycles, and online behaviors.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {EDUCATIONAL_CARDS.map((card, idx) => (
+            <Link 
+              key={idx}
+              href={card.link}
+              className="group rounded-2xl border border-white/[0.05] bg-[#0A0B10]/60 p-6 flex flex-col justify-between gap-5 text-left transition-all duration-300 hover:border-white/[0.14] hover:bg-[#12131C]/60 hover:scale-[1.02] shadow-[0_4px_24px_rgba(0,0,0,0.5)] cursor-pointer"
+            >
+              <div className="flex flex-col gap-2">
+                <span className="text-[9px] font-mono text-[#FF8A3D] uppercase tracking-widest font-bold">
+                  {card.category}
+                </span>
+                <h3 className="font-display font-bold text-base text-white mt-1 group-hover:text-white transition-colors">
+                  {card.title}
+                </h3>
+                <p className="text-xs text-slate-400 leading-relaxed font-sans mt-0.5">
+                  {card.desc}
+                </p>
+              </div>
+
+              <div className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-[#FF8A3D] group-hover:translate-x-1 transition-transform pt-3 border-t border-white/5">
+                <span>Read Lesson</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* SECTION 7 — DAILY DISCOVERY */}
+      <section className="relative w-full max-w-6xl mx-auto px-6 py-20 z-20 flex flex-col gap-10 border-t border-white/5 pt-20">
+        <div className="flex flex-col gap-2 text-center items-center">
+          <span className="text-[10px] font-mono text-[#8A6CFF] uppercase tracking-widest bg-[#8A6CFF]/5 border border-[#8A6CFF]/10 px-2.5 py-0.5 rounded-full">
+            Daily Insights
+          </span>
+          <h2 className="text-3xl md:text-4xl font-black font-display text-white tracking-tight">
+            Daily Discovery
+          </h2>
+          <p className="text-xs text-slate-400 max-w-md">
+            Our featured cultural word breakdown loaded with origin history, examples, and etymology details.
+          </p>
+        </div>
+
+        <div className="rounded-3xl border border-white/[0.06] bg-[#0A0B10]/80 p-8 flex flex-col md:flex-row gap-8 items-stretch justify-between relative overflow-hidden shadow-[0_12px_48px_rgba(0,0,0,0.6)] text-left">
+          <div className="absolute top-0 right-0 w-80 h-80 bg-gradient-to-br from-[#FF6A1A]/10 to-transparent blur-3xl rounded-full" />
+          
+          <div className="flex-1 flex flex-col justify-between gap-6 relative z-10">
+            <div className="flex flex-col gap-2">
+              <span className="text-[10px] font-mono text-[#FF8A3D] uppercase tracking-widest font-bold">Word of the Day</span>
+              <h3 className="text-4xl font-black text-white font-display uppercase tracking-tight mt-1">rizz</h3>
+              <p className="text-sm text-slate-300 font-sans leading-relaxed mt-2">
+                Coined as a clipping of the word &ldquo;charisma&rdquo;, representing the capacity to attract or seduce others through verbal charm, swagger, and nonverbal signals.
+              </p>
+            </div>
+
+            <div className="flex flex-col gap-1.5 border-t border-white/5 pt-4">
+              <span className="text-[10px] font-mono text-slate-500 uppercase tracking-widest">History & Origin</span>
+              <p className="text-xs text-slate-400 font-sans leading-relaxed">
+                Coined around mid-2021 by online streamer Kai Cenat on Twitch, spreading rapidly into TikTok comment sections and viral clips, eventually being crowned Oxford Dictionary Word of the Year in 2023.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex-1 flex flex-col justify-between gap-6 bg-white/[0.01] border border-white/5 rounded-2xl p-6 relative z-10">
+            <div className="flex flex-col gap-3">
+              <span className="text-[10px] font-mono text-[#FF8A3D] uppercase tracking-widest font-bold">Usage Example</span>
+              <p className="text-xs text-slate-300 italic font-serif leading-relaxed bg-black/30 p-3.5 rounded-xl border border-white/[0.03]">
+                &ldquo;He got so much unspoken rizz that he didn&apos;t even need to introduce himself to get an invite.&rdquo;
+              </p>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <span className="text-[10px] font-mono text-slate-500 uppercase tracking-widest">Related Expressions</span>
+              <div className="flex flex-wrap gap-2">
+                {["rizzler", "unspoken rizz", "w-rizz", "l-rizz", "rizzing up"].map((rel, idx) => (
+                  <Link 
+                    href="/word/rizz" 
+                    key={idx}
+                    className="text-[10px] font-mono text-slate-400 bg-white/[0.02] border border-white/5 px-2.5 py-1 rounded-lg hover:border-[#FF6A1A]/30 hover:text-white transition-colors cursor-pointer"
+                  >
+                    {rel}
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex justify-between items-center border-t border-white/5 pt-4 text-[10px] font-mono text-slate-500">
+              <span>Etymology Index: 100%</span>
+              <Link href="/word/rizz" className="text-[#FF8A3D] font-bold hover:underline">Explore Etymology &rarr;</Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION 8 — DID YOU KNOW? */}
+      <section className="relative w-full max-w-6xl mx-auto px-6 py-20 z-20 flex flex-col gap-10 border-t border-white/5 pt-20">
+        <div className="flex flex-col gap-2 text-center items-center">
+          <span className="text-[10px] font-mono text-pink-400 uppercase tracking-widest bg-pink-400/5 border border-pink-400/10 px-2.5 py-0.5 rounded-full">
+            Random Trivia Logs
+          </span>
+          <h2 className="text-3xl md:text-4xl font-black font-display text-white tracking-tight">
+            Did You Know?
+          </h2>
+          <p className="text-xs text-slate-400 max-w-md">
+            Decades of shifting culture produce weird, fascinating trivia. Here is an index of online historical milestones.
+          </p>
+        </div>
+
+        <div className="max-w-2xl mx-auto w-full rounded-2xl border border-white/[0.06] bg-[#0A0B10]/90 p-8 flex flex-col justify-between gap-6 relative overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.5)] min-h-[180px] text-center items-center">
+          <div className="absolute top-0 left-0 w-32 h-32 bg-gradient-to-br from-pink-500/10 to-transparent blur-2xl rounded-full" />
+          
+          <div className="flex flex-col gap-2 z-10">
+            <span className="text-[9px] font-mono text-slate-500 uppercase tracking-widest bg-white/[0.02] border border-white/5 px-2 py-0.5 rounded-full w-fit mx-auto">
+              {DID_YOU_KNOW_FACTS[factIndex].category}
+            </span>
+            <p className="text-lg font-display text-white font-bold leading-relaxed mt-2">
+              &ldquo;{DID_YOU_KNOW_FACTS[factIndex].fact}&rdquo;
+            </p>
+          </div>
+
+          <div className="flex items-center gap-1.5 z-10 mt-2">
+            {DID_YOU_KNOW_FACTS.map((_, idx) => (
+              <button
+                key={idx}
+                onClick={() => setFactIndex(idx)}
+                className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                  factIndex === idx ? "bg-[#FF6A1A] w-4" : "bg-white/10"
+                }`}
+              />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION 9 — TRUST */}
+      <section className="relative w-full max-w-6xl mx-auto px-6 py-20 z-20 flex flex-col gap-10 border-t border-white/5 pt-20">
+        <div className="flex flex-col gap-2 text-center items-center">
+          <span className="text-[10px] font-mono text-emerald-400 uppercase tracking-widest bg-emerald-400/5 border border-emerald-400/10 px-2.5 py-0.5 rounded-full">
+            Why GenSpeak is Reliable
+          </span>
+          <h2 className="text-3xl md:text-4xl font-black font-display text-white tracking-tight">
+            Reliable Internet Linguistics
+          </h2>
+          <p className="text-xs text-slate-400 max-w-md">
+            Linguistic shifts are parsed with rigorous checks to prevent bias, mistranslations, and hallucinated meanings.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {TRUST_CARDS.map((card, idx) => (
+            <div key={idx} className="rounded-2xl border border-white/[0.05] bg-[#0A0B10]/40 p-6 flex items-start gap-4 text-left transition-all duration-300 hover:border-white/[0.12] hover:bg-[#12131C]/40 shadow-[0_4px_24px_rgba(0,0,0,0.5)]">
+              <span className="text-2xl p-2 rounded-xl bg-white/[0.02] border border-white/5 flex items-center justify-center">
+                {card.icon}
+              </span>
+              <div className="flex flex-col gap-1.5">
+                <h3 className="font-display font-bold text-sm text-white">
+                  {card.title}
+                </h3>
+                <p className="text-xs text-slate-400 leading-relaxed font-sans">
+                  {card.desc}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* NEW NAVIGATION MATRIX */}
+      <section className="relative max-w-6xl mx-auto px-6 py-20 z-20 flex flex-col gap-10 border-t border-white/5 pt-20">
         <div className="flex flex-col gap-2 items-center text-center">
           <span className="text-[10px] font-mono text-slate-500 uppercase tracking-widest flex items-center gap-1.5 justify-center">
             <Terminal className="w-3.5 h-3.5 text-primary-pink animate-pulse" />
@@ -727,12 +927,12 @@ export function StorytellingJourney({ onSelectWord }: StorytellingJourneyProps) 
                 className="w-full min-h-[170px] rounded-2xl p-6 flex flex-col gap-4 justify-between"
               >
                 <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-white/[0.03] border border-white/5 flex items-center justify-center text-slate-400 group-hover:text-primary-pink transition-colors">
+                  <div className="w-10 h-10 rounded-xl bg-white/[0.03] border border-white/5 flex items-center justify-center text-slate-400 group-hover:text-[#FF6A1A] transition-colors">
                     {card.icon}
                   </div>
 
                   <div className="flex-1 flex flex-col gap-1">
-                    <h3 className="font-display font-bold text-base text-white group-hover:text-primary-pink transition-colors">
+                    <h3 className="font-display font-bold text-base text-white group-hover:text-[#FF6A1A] transition-colors">
                       {card.title}
                     </h3>
                     <p className="text-xs text-[#9EA3B0] font-sans leading-relaxed">
@@ -742,62 +942,11 @@ export function StorytellingJourney({ onSelectWord }: StorytellingJourneyProps) 
                 </div>
 
                 <div className="flex items-center justify-end">
-                  <ArrowRight className="w-4 h-4 text-slate-500 group-hover:text-primary-pink group-hover:translate-x-1 transition-all" />
+                  <ArrowRight className="w-4 h-4 text-slate-500 group-hover:text-[#FF6A1A] group-hover:translate-x-1 transition-all" />
                 </div>
               </Glass3DCard>
             </Link>
           ))}
-        </div>
-      </section>
-
-      {/* FEATURED WORDS SECTION */}
-      <section className="relative max-w-6xl mx-auto px-6 py-16 z-20 flex flex-col gap-10">
-        <div className="flex flex-col gap-2 items-center text-center">
-          <span className="text-[10px] font-mono text-slate-500 uppercase tracking-widest">
-            LEXICON SPOTLIGHT
-          </span>
-          <h2 className="text-3xl font-black font-display text-white">
-            Featured Words
-          </h2>
-          <p className="text-xs text-[#9EA3B0] font-sans max-w-sm">
-            Read a preview of highly popular slang expressions shaping modern conversation networks.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {featuredSlangs.map((word) => (
-            <Link 
-              href={`/word/${word.slug}`} 
-              key={word.id}
-              className="group p-5 rounded-2xl border border-white/5 bg-[#111217]/25 backdrop-blur-md flex flex-col justify-between gap-4 hover:border-primary-pink/30 hover:shadow-[0_0_20px_rgba(255,106,26,0.06)] transition-all cursor-pointer min-h-[140px]"
-            >
-              <div className="flex flex-col gap-2">
-                <span className="text-[9px] font-mono font-bold text-slate-500 uppercase tracking-wider px-2 py-0.5 rounded bg-white/[0.02] border border-white/5 w-fit">
-                  {word.category}
-                </span>
-                <h3 className="font-display font-bold text-base text-white group-hover:text-primary-pink transition-colors">
-                  {word.term}
-                </h3>
-                <p className="text-xs text-[#9EA3B0] leading-relaxed font-sans line-clamp-2">
-                  {word.definition}
-                </p>
-              </div>
-
-              <div className="flex items-center gap-1.5 text-xs font-mono font-bold text-white group-hover:translate-x-1 transition-transform pt-2">
-                <span>View Term</span>
-                <ArrowRight className="w-3.5 h-3.5 text-primary-pink" />
-              </div>
-            </Link>
-          ))}
-        </div>
-
-        <div className="flex justify-center mt-4">
-          <Link 
-            href="/dictionary" 
-            className="px-6 py-2.5 rounded-full border border-white/5 bg-[#111217] text-slate-400 hover:text-white hover:border-white/10 font-display font-semibold text-xs tracking-wider uppercase transition-all duration-300 cursor-pointer"
-          >
-            Explore Complete Dictionary
-          </Link>
         </div>
       </section>
 

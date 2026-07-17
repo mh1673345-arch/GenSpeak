@@ -13,12 +13,17 @@ interface Props {
 }
 
 export async function generateStaticParams() {
-  const categories = await db.category.findMany({
-    select: { slug: true }
-  });
-  return categories.map((cat) => ({
-    slug: cat.slug,
-  }));
+  try {
+    const categories = await db.category.findMany({
+      select: { slug: true }
+    });
+    return categories.map((cat) => ({
+      slug: cat.slug,
+    }));
+  } catch (err) {
+    console.warn("Failed to generate static category params due to DB network issues. Falling back to dynamic rendering.", err);
+    return [];
+  }
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

@@ -28,12 +28,18 @@ const getWordBySlug = cache(async (slug: string) => {
 });
 
 export async function generateStaticParams() {
-  const words = await db.word.findMany({
-    select: { slug: true }
-  });
-  return words.map((word) => ({
-    slug: word.slug,
-  }));
+  try {
+    const words = await db.word.findMany({
+      select: { slug: true },
+      take: 10
+    });
+    return words.map((word) => ({
+      slug: word.slug,
+    }));
+  } catch (err) {
+    console.warn("Failed to generate static params due to DB network issues. Falling back to dynamic rendering.", err);
+    return [];
+  }
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
