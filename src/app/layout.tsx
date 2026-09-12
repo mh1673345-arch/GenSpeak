@@ -6,6 +6,7 @@ import { SearchProvider } from "@/components/search-provider";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { ThemeProvider } from "@/components/theme-provider";
+import { AuthProvider } from "@/context/AuthContext";
 import { getStats } from "@/lib/dictionary";
 
 import "./globals.css";
@@ -79,22 +80,24 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${inter.variable} ${instrument.variable} ${jetbrains.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-canvas text-ink">
-        <ThemeProvider>
-          <SearchProvider>
-            <a
-              href="#main"
-              className="focus-ring sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-100 focus:rounded-full focus:bg-ink focus:px-4 focus:py-2 focus:text-canvas"
-            >
-              Skip to content
-            </a>
-            <SiteHeader />
-            <main id="main" className="flex-1">
-              {children}
-            </main>
-            <SiteFooter />
-            <SearchDialog termCount={stats.terms} />
-          </SearchProvider>
-        </ThemeProvider>
+        <AuthProvider>
+          <ThemeProvider>
+            <SearchProvider>
+              <a
+                href="#main"
+                className="focus-ring sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-100 focus:rounded-full focus:bg-ink focus:px-4 focus:py-2 focus:text-canvas"
+              >
+                Skip to content
+              </a>
+              <SiteHeader />
+              <main id="main" className="flex-1">
+                {children}
+              </main>
+              <SiteFooter />
+              <SearchDialog termCount={stats.terms} />
+            </SearchProvider>
+          </ThemeProvider>
+        </AuthProvider>
       </body>
     </html>
   );
