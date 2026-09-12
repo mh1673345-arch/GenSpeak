@@ -1,143 +1,60 @@
-import { MetadataRoute } from "next";
-import { db } from "../lib/db";
+import type { MetadataRoute } from "next";
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = "https://genspeak.app";
+import { categories } from "@/content/categories";
+import { scenes } from "@/content/scenes";
+import { getAllTerms, getTagCounts } from "@/lib/dictionary";
 
-  // Base static sitemap pages
-  const staticPages = [
-    {
-      url: baseUrl,
-      lastModified: new Date(),
-      changeFrequency: "daily" as const,
-      priority: 1.0,
-    },
-    {
-      url: `${baseUrl}/dictionary`,
-      lastModified: new Date(),
-      changeFrequency: "daily" as const,
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/ai-decoder`,
-      lastModified: new Date(),
-      changeFrequency: "daily" as const,
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/trending`,
-      lastModified: new Date(),
-      changeFrequency: "daily" as const,
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/internet-culture`,
-      lastModified: new Date(),
-      changeFrequency: "daily" as const,
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/guides`,
-      lastModified: new Date(),
-      changeFrequency: "weekly" as const,
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/categories`,
-      lastModified: new Date(),
-      changeFrequency: "weekly" as const,
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/timeline`,
-      lastModified: new Date(),
-      changeFrequency: "weekly" as const,
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/dashboard`,
-      lastModified: new Date(),
-      changeFrequency: "daily" as const,
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/login`,
-      lastModified: new Date(),
+const base = process.env.NEXT_PUBLIC_SITE_URL ?? "https://genspeak.app";
+
+export default function sitemap(): MetadataRoute.Sitemap {
+  const now = new Date();
+
+  const staticRoutes = [
+    "",
+    "/dictionary",
+    "/categories",
+    "/culture",
+    "/history",
+    "/trending",
+    "/quiz",
+    "/about",
+    "/submit",
+  ].map((route) => ({
+    url: `${base}${route}`,
+    lastModified: now,
+    changeFrequency: "weekly" as const,
+    priority: route === "" ? 1 : 0.8,
+  }));
+
+  const categoryRoutes = categories.map((category) => ({
+    url: `${base}/category/${category.slug}`,
+    lastModified: now,
+    changeFrequency: "weekly" as const,
+    priority: 0.7,
+  }));
+
+  const sceneRoutes = scenes.map((scene) => ({
+    url: `${base}/culture/${scene.slug}`,
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: 0.7,
+  }));
+
+  const termRoutes = getAllTerms().map((term) => ({
+    url: `${base}/term/${term.slug}`,
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: 0.6,
+  }));
+
+  const tagRoutes = getTagCounts()
+    .filter((entry) => entry.count >= 2)
+    .map((entry) => ({
+      url: `${base}/tag/${encodeURIComponent(entry.tag)}`,
+      lastModified: now,
       changeFrequency: "monthly" as const,
       priority: 0.5,
-    },
-    {
-      url: `${baseUrl}/about`,
-      lastModified: new Date(),
-      changeFrequency: "monthly" as const,
-      priority: 0.4,
-    },
-    {
-      url: `${baseUrl}/contact`,
-      lastModified: new Date(),
-      changeFrequency: "monthly" as const,
-      priority: 0.4,
-    },
-    {
-      url: `${baseUrl}/privacy`,
-      lastModified: new Date(),
-      changeFrequency: "monthly" as const,
-      priority: 0.3,
-    },
-    {
-      url: `${baseUrl}/terms`,
-      lastModified: new Date(),
-      changeFrequency: "monthly" as const,
-      priority: 0.3,
-    },
-  ];
-
-  try {
-    // Query dynamic metadata nodes asynchronously from the SQLite database
-    const [dbWords, dbCategories, dbCollections, dbGuides] = await Promise.all([
-      db.word.findMany({ select: { slug: true, updatedAt: true } }),
-      db.category.findMany({ select: { slug: true } }),
-      db.collection.findMany({ select: { slug: true, updatedAt: true } }),
-      db.guide.findMany({ select: { slug: true, updatedAt: true } })
-    ]);
-
-    const wordPages = dbWords.map((word) => ({
-      url: `${baseUrl}/word/${word.slug}`,
-      lastModified: word.updatedAt || new Date(),
-      changeFrequency: "weekly" as const,
-      priority: 0.8,
     }));
 
-    const categoryPages = dbCategories.map((cat) => ({
-      url: `${baseUrl}/category/${cat.slug}`,
-      lastModified: new Date(),
-      changeFrequency: "daily" as const,
-      priority: 0.9,
-    }));
-
-    const collectionPages = dbCollections.map((col) => ({
-      url: `${baseUrl}/collections/${col.slug}`,
-      lastModified: col.updatedAt || new Date(),
-      changeFrequency: "weekly" as const,
-      priority: 0.8,
-    }));
-
-    const guidePages = dbGuides.map((guide) => ({
-      url: `${baseUrl}/guides/${guide.slug}`,
-      lastModified: guide.updatedAt || new Date(),
-      changeFrequency: "weekly" as const,
-      priority: 0.8,
-    }));
-
-    return [
-      ...staticPages,
-      ...wordPages,
-      ...categoryPages,
-      ...collectionPages,
-      ...guidePages
-    ];
-  } catch (error) {
-    console.error("Failed to compile dynamic sitemap coordinates:", error);
-    return staticPages;
-  }
+  return [...staticRoutes, ...categoryRoutes, ...sceneRoutes, ...termRoutes, ...tagRoutes];
 }

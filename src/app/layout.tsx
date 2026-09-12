@@ -1,97 +1,100 @@
-import type { Metadata } from "next";
-import { Inter, Outfit } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Inter, Instrument_Serif, JetBrains_Mono } from "next/font/google";
+
+import { SearchDialog } from "@/components/search-dialog";
+import { SearchProvider } from "@/components/search-provider";
+import { SiteFooter } from "@/components/site-footer";
+import { SiteHeader } from "@/components/site-header";
+import { ThemeProvider } from "@/components/theme-provider";
+import { getStats } from "@/lib/dictionary";
+
 import "./globals.css";
-import { AuthProvider } from "@/context/AuthContext";
-import Script from "next/script";
 
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
+  display: "swap",
 });
 
-const outfit = Outfit({
-  variable: "--font-outfit",
+const instrument = Instrument_Serif({
+  variable: "--font-instrument",
   subsets: ["latin"],
+  weight: "400",
+  display: "swap",
 });
+
+const jetbrains = JetBrains_Mono({
+  variable: "--font-jetbrains",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://genspeak.app";
 
 export const metadata: Metadata = {
-  title: "GenSpeak | Understand the Internet",
-  description: "The world's most beautiful and intelligent platform for understanding Gen Z, Gen Alpha, internet slang, memes, emojis, gaming language, and online trends.",
-  metadataBase: new URL("https://genspeak.app"),
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: "GenSpeak - The internet culture dictionary",
+    template: "%s | GenSpeak",
+  },
+  description:
+    "A modern reference for internet slang, meme formats, AI vocabulary, gaming language and online trends. Every entry has an origin, a plain-language explanation and real usage.",
+  keywords: [
+    "internet slang dictionary",
+    "meme dictionary",
+    "AI terminology",
+    "gen z slang meaning",
+    "internet culture",
+  ],
   openGraph: {
-    title: "GenSpeak | Understand the Internet",
-    description: "The world's most beautiful and intelligent platform for understanding Gen Z, Gen Alpha, internet slang, memes, emojis, gaming language, and online trends.",
-    url: "https://genspeak.app",
-    siteName: "GenSpeak",
-    locale: "en_US",
     type: "website",
+    siteName: "GenSpeak",
+    title: "GenSpeak - The internet culture dictionary",
+    description:
+      "Look up what the internet is saying. Slang, memes, AI vocabulary and platform language, defined properly.",
+    url: siteUrl,
   },
   twitter: {
     card: "summary_large_image",
-    title: "GenSpeak | Understand the Internet",
-    description: "The world's most beautiful and intelligent platform for understanding Gen Z, Gen Alpha, internet slang, memes, emojis, gaming language, and online trends.",
+    title: "GenSpeak - The internet culture dictionary",
+    description: "Look up what the internet is saying, defined properly.",
   },
-  verification: {
-    google: "google-search-console-verification-token-12345",
-  }
+  robots: { index: true, follow: true },
 };
 
-export default function RootLayout({
-  children,
-  modal,
-}: Readonly<{
-  children: React.ReactNode;
-  modal?: React.ReactNode;
-}>) {
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#fbfaf8" },
+    { media: "(prefers-color-scheme: dark)", color: "#09080d" },
+  ],
+};
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const stats = getStats();
+
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${outfit.variable} h-full antialiased dark`}
+      suppressHydrationWarning
+      className={`${inter.variable} ${instrument.variable} ${jetbrains.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-[#030712] text-[#F9FAFB] selection:bg-[#8B5CF6]/30 selection:text-white">
-        {/* Google Analytics GA4 Script Integration */}
-        <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-GENSPEAK2026"
-          strategy="afterInteractive"
-        />
-        <Script id="google-analytics" strategy="afterInteractive">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-GENSPEAK2026');
-          `}
-        </Script>
-
-        {/* Microsoft Clarity Script Integration */}
-        <Script id="microsoft-clarity" strategy="afterInteractive">
-          {`
-            (function(c,l,a,r,i,t,y){
-                c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-                t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-                y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-            })(window,document,"clarity","script","clarity-project-id-999");
-          `}
-        </Script>
-
-        {/* Sentry Error Logging System Mock Handler */}
-        <Script id="sentry-logger" strategy="afterInteractive">
-          {`
-            window.sentryMock = {
-              captureException: function(err) {
-                console.warn("[Sentry Captured Exception]:", err);
-              },
-              captureMessage: function(msg) {
-                console.log("[Sentry Captured Message]:", msg);
-              }
-            };
-          `}
-        </Script>
-
-        <AuthProvider>
-          {children}
-          {modal}
-        </AuthProvider>
+      <body className="flex min-h-full flex-col bg-canvas text-ink">
+        <ThemeProvider>
+          <SearchProvider>
+            <a
+              href="#main"
+              className="focus-ring sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-100 focus:rounded-full focus:bg-ink focus:px-4 focus:py-2 focus:text-canvas"
+            >
+              Skip to content
+            </a>
+            <SiteHeader />
+            <main id="main" className="flex-1">
+              {children}
+            </main>
+            <SiteFooter />
+            <SearchDialog termCount={stats.terms} />
+          </SearchProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
