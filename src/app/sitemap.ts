@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 
 import { categories } from "@/content/categories";
 import { scenes } from "@/content/scenes";
+import { getAllPosts } from "@/lib/blog";
 import { getAllTerms, getTagCounts } from "@/lib/dictionary";
 
 const base = process.env.NEXT_PUBLIC_SITE_URL ?? "https://genspeak.app";
@@ -17,6 +18,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/history",
     "/trending",
     "/quiz",
+    "/blog",
     "/about",
     "/submit",
   ].map((route) => ({
@@ -56,5 +58,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.5,
     }));
 
-  return [...staticRoutes, ...categoryRoutes, ...sceneRoutes, ...termRoutes, ...tagRoutes];
+  const blogRoutes = getAllPosts().map((post) => ({
+    url: `${base}/blog/${post.slug}`,
+    lastModified: new Date(post.date),
+    changeFrequency: "yearly" as const,
+    priority: 0.6,
+  }));
+
+  return [
+    ...staticRoutes,
+    ...categoryRoutes,
+    ...sceneRoutes,
+    ...termRoutes,
+    ...tagRoutes,
+    ...blogRoutes,
+  ];
 }

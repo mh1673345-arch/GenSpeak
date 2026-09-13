@@ -17,6 +17,7 @@ const links = [
   { href: "/history", label: "History" },
   { href: "/trending", label: "Trending" },
   { href: "/quiz", label: "Quiz" },
+  { href: "/blog", label: "Blog" },
 ];
 
 export function SiteHeader() {

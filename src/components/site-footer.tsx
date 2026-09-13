@@ -12,6 +12,7 @@ const product = [
   { href: "/history", label: "History of the language" },
   { href: "/quiz", label: "Daily quiz" },
   { href: "/random", label: "Random entry" },
+  { href: "/blog", label: "Blog" },
   { href: "/about", label: "About GenSpeak" },
   { href: "/submit", label: "Submit a term" },
 ];
