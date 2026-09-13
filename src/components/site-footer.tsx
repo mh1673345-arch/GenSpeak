@@ -78,6 +78,9 @@ export function SiteFooter() {
             &ndash;{stats.newest}
           </p>
         </Container>
+        <Container className="border-t border-line py-4 text-center font-mono text-[11px] text-ink-subtle">
+          <p>Founded by M. Hassan Bin Asif</p>
+        </Container>
       </div>
     </footer>
   );
