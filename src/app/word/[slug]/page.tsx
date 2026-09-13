@@ -48,14 +48,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   
   if (!dbWord) {
     return {
-      title: "Word Not Found | GenSpeak",
+      title: "Word Not Found",
     };
   }
 
   const word = mapDbWordToWordData(dbWord);
 
   return {
-    title: `What Does "${word.term}" Mean? | GenSpeak Slang Dictionary`,
+    title: `What Does "${word.term}" Mean?`,
     description: `Meaning of "${word.term}": ${word.definition}. Origin: ${word.origin.slice(0, 100)}... Learn TikTok examples, gaming context, and related emojis.`,
     alternates: {
       canonical: `/word/${word.slug}`,

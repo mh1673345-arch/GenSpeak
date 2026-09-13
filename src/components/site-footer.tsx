@@ -79,7 +79,7 @@ export function SiteFooter() {
           </p>
         </Container>
         <Container className="border-t border-line py-4 text-center font-mono text-[11px] text-ink-subtle">
-          <p>Founded by M. Hassan Bin Asif</p>
+          <p>Founded by M. Hassan Bin Asif &middot; A project of Veyra Systems</p>
         </Container>
       </div>
     </footer>

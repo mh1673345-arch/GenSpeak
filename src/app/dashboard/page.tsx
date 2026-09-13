@@ -146,8 +146,8 @@ function EvolvingPlanet({ streak, savedCount }: EvolvingPlanetProps) {
 
 export default function DashboardPage() {
   const router = useRouter();
-  const { 
-    user, logout, unsaveWord, createCustomCollection 
+  const {
+    user, logout, unsaveWord, createCustomCollection
   } = useAuth();
 
   const [searchQuery, setSearchQuery] = useState("");

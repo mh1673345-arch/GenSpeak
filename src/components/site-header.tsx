@@ -49,7 +49,7 @@ export function SiteHeader() {
           <span className="font-display text-xl tracking-tight">GenSpeak</span>
         </Link>
 
-        <nav className="ml-6 hidden items-center gap-1 md:flex">
+        <nav className="ml-6 hidden items-center gap-1 lg:flex">
           {links.map((link) => {
             const activeLink = pathname === link.href || pathname.startsWith(`${link.href}/`);
             return (
@@ -87,7 +87,7 @@ export function SiteHeader() {
             aria-label={menuOpen ? "Close menu" : "Open menu"}
             aria-expanded={menuOpen}
             onClick={() => setMenuOpen((value) => !value)}
-            className="focus-ring grid size-9 place-items-center rounded-full border border-line text-ink-muted md:hidden"
+            className="focus-ring grid size-9 place-items-center rounded-full border border-line text-ink-muted lg:hidden"
           >
             {menuOpen ? <X className="size-4" /> : <Menu className="size-4" />}
           </button>
@@ -95,7 +95,7 @@ export function SiteHeader() {
       </Container>
 
       {menuOpen ? (
-        <div className="animate-fade border-t border-line bg-canvas md:hidden">
+        <div className="animate-fade border-t border-line bg-canvas lg:hidden">
           <Container className="flex flex-col py-2">
             {links.map((link) => (
               <Link
