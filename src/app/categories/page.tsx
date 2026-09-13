@@ -9,7 +9,7 @@ import { getCategoryStats } from "@/lib/dictionary";
 export const metadata: Metadata = {
   title: "Categories",
   description:
-    "Internet culture split into eight fields: slang, memes, AI, gaming, social platforms, crypto, fandom and work.",
+    "Internet culture split into sixteen fields: slang, memes, AI, gaming, social platforms, crypto, fandom, work, old-web history, developer culture, streaming, anime, aesthetics, dating, discourse and text.",
   alternates: { canonical: "/categories" },
 };
 
@@ -20,14 +20,14 @@ export default function CategoriesPage() {
     <Container className="py-14">
       <header className="max-w-2xl">
         <p className="font-mono text-[11px] tracking-[0.18em] text-ink-subtle uppercase">
-          Eight fields
+          {stats.length} fields
         </p>
         <h1 className="mt-3 font-display text-5xl leading-none tracking-tight sm:text-6xl">
           Categories
         </h1>
         <p className="mt-5 text-lg leading-relaxed text-ink-muted text-pretty">
-          Internet language does not come from one place. These are the eight scenes that produce
-          most of it, each with its own history and its own rules.
+          Internet language does not come from one place. These are the {stats.length} fields
+          that produce most of it, each with its own history and its own rules.
         </p>
       </header>
 

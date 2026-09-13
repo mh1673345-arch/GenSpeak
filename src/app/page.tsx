@@ -147,8 +147,8 @@ export default function HomePage() {
             </p>
             <h3 className="mt-4 font-display text-3xl tracking-tight">History</h3>
             <p className="mt-2 text-sm leading-relaxed text-ink-muted">
-              Eight eras of internet language, from dial-up boards to the model era, with what each
-              period actually contributed.
+              {eras.length} eras of internet language, from dial-up boards to the model era, with
+              what each period actually contributed.
             </p>
             <p className="mt-6 flex items-center gap-2 text-sm text-accent">
               {eras.length} eras

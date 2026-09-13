@@ -8,8 +8,7 @@ import { getStats, getTermsByYearRange, getYearHistogram } from "@/lib/dictionar
 
 export const metadata: Metadata = {
   title: "History of internet language",
-  description:
-    "Fifty years of internet culture in eight eras, from Usenet and dial-up boards to the model era, with the vocabulary each period produced.",
+  description: `Internet culture in ${eras.length} eras, from Usenet and dial-up boards to the model era, with the vocabulary each period produced.`,
   alternates: { canonical: "/history" },
 };
 
@@ -30,8 +29,8 @@ export default function HistoryPage() {
         <p className="mt-6 text-lg leading-relaxed text-ink-muted text-pretty">
           Internet language did not begin with TikTok. Most of its conventions were settled on
           mailing lists and bulletin boards decades earlier, and every platform since has
-          rediscovered them. These are the eight periods that produced the {stats.terms} entries in
-          this dictionary.
+          rediscovered them. These are the {eras.length} periods that produced the {stats.terms}
+          entries in this dictionary.
         </p>
       </header>
 
