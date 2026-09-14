@@ -69,7 +69,7 @@ export function QuizGame({ questions }: { questions: QuizQuestion[] }) {
                   {right ? <Check className="size-3.5" /> : <X className="size-3.5" />}
                 </span>
                 <Link
-                  href={`/term/${q.slug}`}
+                  href={`/meaning/${q.slug}`}
                   className="focus-ring font-display text-lg tracking-tight hover:text-accent"
                 >
                   {q.options[q.answer]}
@@ -163,7 +163,7 @@ export function QuizGame({ questions }: { questions: QuizQuestion[] }) {
       {chosen !== null ? (
         <div className="animate-fade mt-8 flex flex-wrap items-center justify-between gap-4 border-t border-line pt-6">
           <Link
-            href={`/term/${question.slug}`}
+            href={`/meaning/${question.slug}`}
             className="focus-ring text-sm text-ink-muted underline underline-offset-4 hover:text-ink"
           >
             Read the full entry for {question.options[question.answer]}

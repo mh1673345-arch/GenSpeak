@@ -516,7 +516,7 @@ export default function DashboardPage() {
                   <h3 className="font-display font-bold text-sm text-white border-b border-white/5 pb-2">AI Recommended Discoveries</h3>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-2">
                     {[
-                      { type: "slang", name: "Sigma", desc: "Independent lone-wolf slang concept.", slug: "/word/sigma" },
+                      { type: "slang", name: "Sigma", desc: "Independent lone-wolf slang concept.", slug: "/meaning/sigma" },
                       { type: "guide", name: "Understanding Brainrot", desc: "Absurdist vertical loop media slang.", slug: "/guides/understanding-brainrot" },
                       { type: "collection", name: "Top TikTok Slang", desc: "Primary list of vertical-reel tags.", slug: "/collections/top-tiktok-slang" }
                     ].map((rec, i) => (
@@ -574,7 +574,7 @@ export default function DashboardPage() {
                             key={word}
                             className="p-4.5 rounded-xl border border-white/5 bg-[#111217]/25 flex items-center justify-between group"
                           >
-                            <Link href={`/word/${word}`} className="flex flex-col gap-0.5 capitalize">
+                            <Link href={`/meaning/${word}`} className="flex flex-col gap-0.5 capitalize">
                               <span className="font-display font-bold text-xs text-white group-hover:text-[#FF8A3D] transition-colors">{word}</span>
                               <span className="text-[9px] font-mono text-slate-500 lowercase">Dictionary entry</span>
                             </Link>
@@ -621,7 +621,7 @@ export default function DashboardPage() {
                               deck.words.map(w => (
                                 <Link 
                                   key={w} 
-                                  href={`/word/${w}`}
+                                  href={`/meaning/${w}`}
                                   className="text-[9px] font-mono px-2 py-0.5 rounded bg-white/[0.03] border border-white/5 text-[#FF8A3D]"
                                 >
                                   #{w}

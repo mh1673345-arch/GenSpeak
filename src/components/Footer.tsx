@@ -66,7 +66,7 @@ export function Footer() {
             <span className="text-[10px] font-mono font-bold text-[#FF8A3D] uppercase tracking-widest">Popular Searches</span>
             <div className="flex flex-col gap-2 text-xs">
               {["rizz", "skibidi", "gyatt", "sigma", "npc"].map((term) => (
-                <Link key={term} href={`/word/${term}`} className="text-slate-500 hover:text-white transition-colors capitalize font-sans">{term}</Link>
+                <Link key={term} href={`/meaning/${term.toLowerCase().replace(/\s+/g, "-")}`} className="text-slate-500 hover:text-white transition-colors capitalize font-sans">{term}</Link>
               ))}
             </div>
           </div>
@@ -92,7 +92,7 @@ export function Footer() {
             <span className="text-[10px] font-mono font-bold text-pink-400 uppercase tracking-widest">Newest Words</span>
             <div className="flex flex-col gap-2 text-xs">
               {["fanum tax", "looksmaxing", "mogging", "delulu", "cooked"].map((term) => (
-                <Link key={term} href={`/word/${term}`} className="text-slate-500 hover:text-white transition-colors capitalize font-sans">{term}</Link>
+                <Link key={term} href={`/meaning/${term.toLowerCase().replace(/\s+/g, "-")}`} className="text-slate-500 hover:text-white transition-colors capitalize font-sans">{term}</Link>
               ))}
             </div>
           </div>

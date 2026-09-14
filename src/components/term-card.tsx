@@ -18,7 +18,7 @@ export function TermCard({ term, rank, className }: TermCardProps) {
 
   return (
     <Link
-      href={`/term/${term.slug}`}
+      href={`/meaning/${term.slug}`}
       style={{ "--cat": category?.hue } as React.CSSProperties}
       className={cn(
         "card focus-ring group relative flex flex-col gap-3 p-5 hover:-translate-y-0.5",
@@ -65,7 +65,7 @@ export function TermRow({ term, rank }: { term: Term; rank?: number }) {
 
   return (
     <Link
-      href={`/term/${term.slug}`}
+      href={`/meaning/${term.slug}`}
       style={{ "--cat": category?.hue } as React.CSSProperties}
       className="focus-ring group flex items-center gap-4 border-b border-line px-2 py-4 transition-colors last:border-b-0 hover:bg-canvas-subtle"
     >

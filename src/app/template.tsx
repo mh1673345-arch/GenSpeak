@@ -8,7 +8,7 @@ export default function Template({ children }: { children: React.ReactNode }) {
 
   return (
     <motion.div
-      initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 12 }}
+      initial={false}
       animate={{ opacity: 1, y: 0 }}
       exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: -12 }}
       transition={{ duration: shouldReduceMotion ? 0.25 : 0.55, ease: [0.16, 1, 0.3, 1] }}

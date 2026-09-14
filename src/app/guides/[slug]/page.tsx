@@ -163,7 +163,7 @@ export default function CultureGuideDetail({ params }: GuidePageProps) {
               <div className="flex flex-col gap-3">
                 {suggestedWords.map((word) => (
                   <Link
-                    href={`/word/${word.slug}`}
+                    href={`/meaning/${word.slug}`}
                     key={word.id}
                     className="group p-5 rounded-2xl border border-white/5 bg-[#111217]/25 flex items-center justify-between hover:border-[#FF6A1A]/30 transition-all cursor-pointer"
                   >

@@ -644,7 +644,7 @@ export function StorytellingJourney({ onSelectWord }: StorytellingJourneyProps) 
           {TRENDING_WORDS_LIST.map((word, idx) => (
             <Link 
               key={idx}
-              href={`/word/${word.term}`}
+              href={`/meaning/${word.term.toLowerCase().replace(/\s+/g, "-")}`}
               className="group rounded-2xl border border-white/[0.05] bg-[#0B0C10]/60 p-5 flex flex-col justify-between gap-4 text-left transition-all duration-300 hover:border-[#FF6A1A]/30 hover:bg-[#121319]/70 hover:scale-[1.02] shadow-[0_4px_24px_rgba(0,0,0,0.5)] cursor-pointer"
             >
               <div className="flex flex-col gap-2">
@@ -809,7 +809,7 @@ export function StorytellingJourney({ onSelectWord }: StorytellingJourneyProps) 
               <div className="flex flex-wrap gap-2">
                 {["rizzler", "unspoken rizz", "w-rizz", "l-rizz", "rizzing up"].map((rel, idx) => (
                   <Link 
-                    href="/word/rizz" 
+                    href="/meaning/rizz" 
                     key={idx}
                     className="text-[10px] font-mono text-slate-400 bg-white/[0.02] border border-white/5 px-2.5 py-1 rounded-lg hover:border-[#FF6A1A]/30 hover:text-white transition-colors cursor-pointer"
                   >
@@ -821,7 +821,7 @@ export function StorytellingJourney({ onSelectWord }: StorytellingJourneyProps) 
 
             <div className="flex justify-between items-center border-t border-white/5 pt-4 text-[10px] font-mono text-slate-500">
               <span>Etymology Index: 100%</span>
-              <Link href="/word/rizz" className="text-[#FF8A3D] font-bold hover:underline">Explore Etymology &rarr;</Link>
+              <Link href="/meaning/rizz" className="text-[#FF8A3D] font-bold hover:underline">Explore Etymology &rarr;</Link>
             </div>
           </div>
         </div>

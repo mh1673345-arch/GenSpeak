@@ -1,10 +1,24 @@
 import type { MetadataRoute } from "next";
 
-const base = process.env.NEXT_PUBLIC_SITE_URL ?? "https://genspeak.app";
+import { getSiteUrl } from "@/lib/seo";
 
 export default function robots(): MetadataRoute.Robots {
+  const siteUrl = getSiteUrl();
+
   return {
-    rules: { userAgent: "*", allow: "/" },
-    sitemap: `${base}/sitemap.xml`,
+    rules: {
+      userAgent: "*",
+      allow: "/",
+      disallow: [
+        "/admin",
+        "/admin/",
+        "/dashboard",
+        "/dashboard/",
+        "/login",
+        "/login/",
+        "/api/",
+      ],
+    },
+    sitemap: `${siteUrl}/sitemap.xml`,
   };
 }

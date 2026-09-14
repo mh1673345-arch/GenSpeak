@@ -1,11 +1,24 @@
 "use client";
 
 import { Search } from "lucide-react";
+import Link from "next/link";
 
 import { useSearch } from "@/components/search-provider";
 
-export function HeroSearch({ suggestions }: { suggestions: string[] }) {
+export type SuggestionItem = string | { label: string; slug: string };
+
+export function HeroSearch({ suggestions }: { suggestions: SuggestionItem[] }) {
   const { openSearch } = useSearch();
+
+  const normalized = suggestions.map((item) => {
+    if (typeof item === "string") {
+      return {
+        label: item,
+        slug: item.toLowerCase().trim().replace(/\s+/g, "-"),
+      };
+    }
+    return item;
+  });
 
   return (
     <div className="w-full max-w-2xl">
@@ -27,15 +40,14 @@ export function HeroSearch({ suggestions }: { suggestions: string[] }) {
         <span className="font-mono text-[11px] tracking-widest text-ink-subtle uppercase">
           Try
         </span>
-        {suggestions.map((word) => (
-          <button
-            key={word}
-            type="button"
-            onClick={openSearch}
+        {normalized.map((item) => (
+          <Link
+            key={item.slug}
+            href={`/meaning/${item.slug}`}
             className="focus-ring rounded-full border border-line bg-surface px-3 py-1 text-xs text-ink-muted transition hover:border-line-strong hover:text-ink"
           >
-            {word}
-          </button>
+            {item.label}
+          </Link>
         ))}
       </div>
     </div>

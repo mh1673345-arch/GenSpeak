@@ -8,6 +8,7 @@ import { SiteHeader } from "@/components/site-header";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/context/AuthContext";
 import { getStats } from "@/lib/dictionary";
+import { getBaseRobots, getSiteUrl } from "@/lib/seo";
 
 import "./globals.css";
 
@@ -30,7 +31,7 @@ const jetbrains = JetBrains_Mono({
   display: "swap",
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://genspeak.app";
+const siteUrl = getSiteUrl();
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -60,7 +61,7 @@ export const metadata: Metadata = {
     title: "GenSpeak - The internet culture dictionary",
     description: "Look up what the internet is saying, defined properly.",
   },
-  robots: { index: true, follow: true },
+  robots: getBaseRobots(),
 };
 
 export const viewport: Viewport = {

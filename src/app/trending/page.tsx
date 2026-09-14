@@ -85,7 +85,7 @@ export default function TrendingPage() {
           {cooling.map((term) => (
             <Link
               key={term.slug}
-              href={`/term/${term.slug}`}
+              href={`/meaning/${term.slug}`}
               className="focus-ring card flex items-center gap-3 px-4 py-2.5"
             >
               <span className="font-display text-lg tracking-tight">{term.term}</span>

@@ -551,7 +551,7 @@ export function InternetPlanet({ onTrackNodes }: InternetPlanetProps) {
       
       // Delay navigation to let zoom transition slide beautifully
       setTimeout(() => {
-        router.push(`/categories/${hoveredNode.id}`);
+        router.push(`/category/${hoveredNode.id}`);
       }, 350);
     }
   };
@@ -622,7 +622,7 @@ export function InternetPlanet({ onTrackNodes }: InternetPlanetProps) {
               onClick={() => {
                 setZoomFactor(3.0);
                 setTimeout(() => {
-                  router.push(`/categories/${node.id}`);
+                  router.push(`/category/${node.id}`);
                 }, 350);
               }}
               onFocus={() => {

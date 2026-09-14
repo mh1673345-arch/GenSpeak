@@ -14,7 +14,7 @@ export function CopyLink({ slug }: { slug: string }) {
 
   async function copy() {
     try {
-      await navigator.clipboard.writeText(`${window.location.origin}/term/${slug}`);
+      await navigator.clipboard.writeText(`${window.location.origin}/meaning/${slug}`);
       setCopied(true);
     } catch {
       // Clipboard permission denied - leave the button in its resting state.

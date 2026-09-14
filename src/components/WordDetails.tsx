@@ -60,7 +60,8 @@ export function WordDetails({ word }: WordDetailsProps) {
   };
 
   const handleShare = () => {
-    navigator.clipboard.writeText(`https://genspeak.app/word/${word.slug}`);
+    const origin = typeof window !== "undefined" ? window.location.origin : "https://genspeak.app";
+    navigator.clipboard.writeText(`${origin}/meaning/${word.slug}`);
     setCopiedLink(true);
     setTimeout(() => setCopiedLink(false), 2000);
   };
@@ -118,7 +119,7 @@ export function WordDetails({ word }: WordDetailsProps) {
               <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-accent-orange/10 text-accent-orange border border-accent-orange/20">
                 {popularityStatus}
               </span>
-              <span className="text-[10px] text-slate-500 font-mono ml-1">/word/{word.slug}</span>
+              <span className="text-[10px] text-slate-500 font-mono ml-1">/meaning/{word.slug}</span>
             </div>
 
           <div className="flex items-center gap-4">

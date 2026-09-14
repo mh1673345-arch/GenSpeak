@@ -4,10 +4,10 @@ import { categories } from "@/content/categories";
 import { scenes } from "@/content/scenes";
 import { getAllPosts } from "@/lib/blog";
 import { getAllTerms, getTagCounts } from "@/lib/dictionary";
-
-const base = process.env.NEXT_PUBLIC_SITE_URL ?? "https://genspeak.app";
+import { getSiteUrl } from "@/lib/seo";
 
 export default function sitemap(): MetadataRoute.Sitemap {
+  const base = getSiteUrl();
   const now = new Date();
 
   const staticRoutes = [
@@ -32,7 +32,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     url: `${base}/category/${category.slug}`,
     lastModified: now,
     changeFrequency: "weekly" as const,
-    priority: 0.7,
+    priority: 0.8,
   }));
 
   const sceneRoutes = scenes.map((scene) => ({
@@ -43,10 +43,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
   }));
 
   const termRoutes = getAllTerms().map((term) => ({
-    url: `${base}/term/${term.slug}`,
+    url: `${base}/meaning/${term.slug}`,
     lastModified: now,
     changeFrequency: "monthly" as const,
-    priority: 0.6,
+    priority: 0.8,
   }));
 
   const tagRoutes = getTagCounts()

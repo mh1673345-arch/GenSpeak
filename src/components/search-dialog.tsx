@@ -91,7 +91,7 @@ function SearchPanel({ termCount, onClose }: { termCount: number; onClose: () =>
   const go = useCallback(
     (slug: string) => {
       onClose();
-      router.push(`/term/${slug}`);
+      router.push(`/meaning/${slug}`);
     },
     [router, onClose],
   );

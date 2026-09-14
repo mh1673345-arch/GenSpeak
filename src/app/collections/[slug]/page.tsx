@@ -70,7 +70,7 @@ export default function CollectionDetailPage({ params }: CollectionPageProps) {
             {matchingWords.length > 0 ? (
               matchingWords.map((word) => (
                 <Link
-                  href={`/word/${word.slug}`}
+                  href={`/meaning/${word.slug}`}
                   key={word.id}
                   className="group p-5 rounded-2xl border border-white/5 bg-[#111217]/25 flex items-center justify-between hover:border-[#FF6A1A]/30 transition-all cursor-pointer"
                 >

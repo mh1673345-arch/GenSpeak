@@ -99,7 +99,7 @@ export default function HomePage() {
             </p>
 
             <div className="mt-8 flex flex-wrap gap-3">
-              <ButtonLink href={`/term/${wotd.slug}`} variant="primary">
+              <ButtonLink href={`/meaning/${wotd.slug}`} variant="primary">
                 Read the full entry
                 <ArrowRight className="size-4" aria-hidden />
               </ButtonLink>

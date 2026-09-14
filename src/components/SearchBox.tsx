@@ -245,18 +245,18 @@ export function SearchBox({ onSelectWord }: SearchBoxProps) {
 
     // Direct routing
     if (item.type === "word") {
-      router.push(`/word/${item.slug}`);
+      router.push(`/meaning/${item.slug}`);
     } else if (item.type === "guide") {
       router.push(`/guides/${item.slug}`);
     } else if (item.type === "collection") {
       router.push(`/collections/${item.slug}`);
     } else if (item.type === "category") {
-      router.push(`/categories/${item.slug}`);
+      router.push(`/category/${item.slug}`);
     } else if (item.type === "timeline") {
       router.push(`/timeline`);
     } else if (item.type === "emoji") {
       // Find matching word for emoji, or route to list
-      router.push(`/word/rizz`);
+      router.push(`/meaning/rizz`);
     }
   };
 
@@ -269,7 +269,7 @@ export function SearchBox({ onSelectWord }: SearchBoxProps) {
         if (onSelectWord) {
           onSelectWord(w);
         } else {
-          router.push(`/word/${w.slug}`);
+          router.push(`/meaning/${w.slug}`);
         }
       })
       .catch(err => console.error("Failed to load random surprise slang:", err));
@@ -487,7 +487,7 @@ export function SearchBox({ onSelectWord }: SearchBoxProps) {
                           key={word.id}
                           onClick={() => {
                             setIsOpen(false);
-                            router.push(`/word/${word.slug}`);
+                            router.push(`/meaning/${word.slug}`);
                           }}
                           className="flex items-center gap-3 p-3 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-white/10 hover:bg-white/[0.04] transition-all cursor-pointer"
                         >

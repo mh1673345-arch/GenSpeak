@@ -505,7 +505,7 @@ export function Translator() {
                           {msg.citations.words.map((w, i) => (
                             <Link 
                               key={i} 
-                              href={`/word/${w}`}
+                              href={`/meaning/${w}`}
                               className="px-2 py-0.5 rounded bg-white/[0.03] border border-white/5 text-[#FF8A3D] hover:border-[#FF6A1A]/30 transition-colors font-bold lowercase"
                             >
                               {w}

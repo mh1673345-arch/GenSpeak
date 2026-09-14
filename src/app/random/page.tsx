@@ -8,5 +8,5 @@ export const dynamic = "force-dynamic";
 export default function RandomPage() {
   const terms = getAllTerms();
   const term = terms[Math.floor(Math.random() * terms.length)];
-  redirect(`/term/${term.slug}`);
+  redirect(`/meaning/${term.slug}`);
 }

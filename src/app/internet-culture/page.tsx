@@ -145,7 +145,7 @@ export default function InternetCultureHub() {
                 }}
               >
                 <Link
-                  href={`/categories/${routeSlug}`}
+                  href={`/category/${routeSlug}`}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#0B0B0F]/90 border border-white/5 text-[9px] font-mono uppercase tracking-widest text-[#9EA3B0] hover:text-white hover:border-[#FF6A1A]/30 transition-all duration-300 shadow-xl cursor-pointer"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-[#FFB347]" />
@@ -180,7 +180,7 @@ export default function InternetCultureHub() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {previewCategories.map((cat) => (
             <Link
-              href={`/categories/${cat.slug}`}
+              href={`/category/${cat.slug}`}
               key={cat.slug}
               className="group relative rounded-2xl border border-white/5 bg-[#111217]/30 backdrop-blur-md p-6 flex flex-col gap-4 justify-between transition-all duration-300 hover:border-white/10 hover:shadow-[0_0_25px_rgba(255,106,26,0.08)] hover:-translate-y-1 overflow-hidden cursor-pointer"
             >
