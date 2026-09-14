@@ -739,4 +739,13 @@ export const textTerms: RawTerm[] = [
     ex: ["GN, talk tomorrow.", "GN, love you."],
     rel: ["ily", "ilysm", "ttyl"], tags: ["texting", "abbreviation", "classic"],
   },
+  {
+    slug: "sksksk", term: "Sksksk", pron: "SKUH-skuh-skuh", pos: "interjection", cat: "text",
+    year: 2019, pop: 38, trend: -8, status: "fading",
+    def: "A vocalisation typed to represent shocked or excited laughter, without spelling out actual words, often paired with and I oop as a matched exclamation pair.",
+    eli: "A typed sound representing excited or shocked laughing, without using real words.",
+    org: "Associated with the VSCO girl aesthetic of 2019, spreading through TikTok as a recognisable vocal tic before becoming a punchline about the trend itself.",
+    ex: ["sksksk I cannot believe that actually worked", "Nobody has typed sksksk unironically in years."],
+    rel: ["vsco-girl", "oop", "keysmash"], tags: ["tiktok", "2019", "vocalisation"],
+  },
 ];
